@@ -4,8 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 
 public class CleaverFrame extends JFrame {
-    protected CleaverFileSelectPanel fileSelectPanel;
-    protected CleaverModeSelectPanel modeSelectPanel;
+    protected CleaverChopAndStitchPanel chopStitchPanel;
 
     public CleaverFrame() {
         super();
@@ -15,11 +14,12 @@ public class CleaverFrame extends JFrame {
 
         cp.setLayout(new BoxLayout(cp, BoxLayout.PAGE_AXIS));
 
-        fileSelectPanel = new CleaverFileSelectPanel();
-        cp.add(fileSelectPanel);
+        this.add(Box.createVerticalStrut(4));
 
-        modeSelectPanel = new CleaverModeSelectPanel();
-        cp.add(modeSelectPanel);
+        chopStitchPanel = new CleaverChopAndStitchPanel();
+        cp.add(chopStitchPanel);
+
+        this.add(Box.createVerticalStrut(4));
 
         this.pack();
     }

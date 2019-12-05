@@ -1,11 +1,10 @@
 package eu.steffo.cleaver.gui;
 
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import java.io.File;
 
-public class CleaverFileSelectPanel extends JPanel {
+public class CleaverFileSelectPanel extends CleaverRowPanel {
     protected JFileChooser fileChooser;
     protected JButton selectFilesButton;
     protected JTextField selectedFilesText;
@@ -14,10 +13,10 @@ public class CleaverFileSelectPanel extends JPanel {
     public CleaverFileSelectPanel() {
         super();
 
-        this.setLayout(new FlowLayout());
-
         fileChooser = new JFileChooser();
         fileChooser.setMultiSelectionEnabled(true);
+
+        this.add(Box.createHorizontalStrut(8));
 
         selectFilesButton = new JButton("Select files...");
         selectFilesButton.addActionListener(e -> {
@@ -27,20 +26,25 @@ public class CleaverFileSelectPanel extends JPanel {
 
             StringBuilder displayedText = new StringBuilder();
             for (File file : selectedFiles) {
+                displayedText.append("\"");
                 displayedText.append(file.getName());
-                displayedText.append("; ");
+                displayedText.append("\" ");
             }
 
             selectedFilesText.setText(displayedText.toString());
         });
         this.add(selectFilesButton);
-
         selectedFiles = new File[0];
 
+        this.add(Box.createHorizontalStrut(8));
+
         selectedFilesText = new JTextField();
+        selectedFilesText.setMinimumSize(new Dimension(200, 24));
         selectedFilesText.setPreferredSize(new Dimension(200, 24));
         selectedFilesText.setEditable(false);
         this.add(selectedFilesText);
+
+        this.add(Box.createHorizontalStrut(8));
     }
 
     public File[] getSelectedFiles() {

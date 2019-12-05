@@ -20,6 +20,10 @@ The documentation for this project is available [here](https://gh.steffo.eu/clea
 
 ### Progress
 
+#### 2019-12-05
+
+![](https://i.imgur.com/sLG43Kc.png)
+
 #### 2019-12-04
 
 ![](https://i.imgur.com/HnD7k3B.png)
