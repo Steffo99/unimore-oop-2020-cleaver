@@ -1,6 +1,6 @@
 package eu.steffo.cleaver.gui;
 
-public class CleaverStitchPanel extends CleaverCreateJobPanel {
+public class CleaverStitchPanel extends CreateJobPanel {
 
     @Override
     protected String getPanelText() {

@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"eu.steffo.cleaver"},{"l":"eu.steffo.cleaver.gui"}]
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"eu.steffo.cleaver"},{"l":"eu.steffo.cleaver.gui"},{"l":"eu.steffo.cleaver.logic"},{"l":"eu.steffo.cleaver.logic.compress"},{"l":"eu.steffo.cleaver.logic.crypt"},{"l":"eu.steffo.cleaver.logic.split"}]

@@ -2,17 +2,19 @@ package eu.steffo.cleaver.gui;
 
 import javax.swing.*;
 
-public class CleaverSplitOptionPanel extends CleaverRowPanel {
-    protected JCheckBox compressionCheckBox;
-    protected JSeparator firstSeparator;
-    protected JLabel sizeLabel;
-    protected JTextField sizeTextField;
-    protected JLabel sizeUnitLabel;
-    protected JSeparator secondoSeparator;
-    protected JLabel partsLabel;
-    protected JTextField partsTextField;
+public class SplitRow extends Row {
+    protected final JCheckBox compressionCheckBox;
+    protected final JSeparator firstSeparator;
+    protected final JLabel sizeLabel;
+    protected final JTextField sizeTextField;
+    protected final JLabel sizeUnitLabel;
+    protected final JSeparator secondoSeparator;
+    protected final JLabel partsLabel;
+    protected final JTextField partsTextField;
 
-    public CleaverSplitOptionPanel() {
+    public SplitRow() {
+        super();
+
         this.add(Box.createHorizontalStrut(8));
 
         compressionCheckBox = new JCheckBox("Split");

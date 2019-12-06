@@ -2,10 +2,12 @@ package eu.steffo.cleaver.gui;
 
 import javax.swing.*;
 
-public class CleaverCompressOptionPanel extends CleaverRowPanel {
-    protected JCheckBox compressionCheckBox;
+public class CompressRow extends Row {
+    protected final JCheckBox compressionCheckBox;
 
-    public CleaverCompressOptionPanel() {
+    public CompressRow() {
+        super();
+
         this.add(Box.createHorizontalStrut(8));
 
         compressionCheckBox = new JCheckBox("Compress");

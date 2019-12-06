@@ -2,13 +2,15 @@ package eu.steffo.cleaver.gui;
 
 import javax.swing.*;
 
-public class CleaverCryptOptionPanel extends CleaverRowPanel {
-    protected JCheckBox cryptCheckBox;
-    protected JSeparator separator;
-    protected JLabel keyLabel;
-    protected JTextField keyTextField;
+public class CryptRow extends Row {
+    protected final JCheckBox cryptCheckBox;
+    protected final JSeparator separator;
+    protected final JLabel keyLabel;
+    protected final JTextField keyTextField;
 
-    public CleaverCryptOptionPanel() {
+    public CryptRow() {
+        super();
+
         this.add(Box.createHorizontalStrut(8));
 
         cryptCheckBox = new JCheckBox("Encrypt");

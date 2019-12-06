@@ -2,10 +2,12 @@ package eu.steffo.cleaver.gui;
 
 import javax.swing.*;
 
-public class CleaverCreateJobButtonPanel extends CleaverRowPanel {
-    protected JButton createJobButton;
+public class CreateJobButtonRow extends Row {
+    protected final JButton createJobButton;
 
-    public CleaverCreateJobButtonPanel() {
+    public CreateJobButtonRow() {
+        super();
+
         this.add(Box.createHorizontalStrut(8));
 
         createJobButton = new JButton("Create job");

@@ -1,20 +1,19 @@
 package eu.steffo.cleaver.gui;
 
-import java.awt.*;
 import javax.swing.*;
 
-public class CleaverChopAndStitchPanel extends JPanel {
-    protected CleaverChopPanel chopPanel;
-    protected CleaverStitchPanel stitchPanel;
+public class ChopAndStitchPanel extends JPanel {
+    protected final ChopPanel chopPanel;
+    protected final CleaverStitchPanel stitchPanel;
 
-    public CleaverChopAndStitchPanel() {
+    public ChopAndStitchPanel() {
         super();
 
         this.setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
         this.add(Box.createHorizontalStrut(4));
 
-        chopPanel = new CleaverChopPanel();
+        chopPanel = new ChopPanel();
         this.add(chopPanel);
 
         this.add(Box.createHorizontalStrut(4));

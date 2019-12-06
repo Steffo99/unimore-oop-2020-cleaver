@@ -1,2 +1,6 @@
 eu.steffo.cleaver
 eu.steffo.cleaver.gui
+eu.steffo.cleaver.logic
+eu.steffo.cleaver.logic.compress
+eu.steffo.cleaver.logic.crypt
+eu.steffo.cleaver.logic.split

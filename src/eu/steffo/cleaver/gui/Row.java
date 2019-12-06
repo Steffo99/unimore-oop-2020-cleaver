@@ -3,9 +3,9 @@ package eu.steffo.cleaver.gui;
 import java.awt.*;
 import javax.swing.*;
 
-public abstract class CleaverRowPanel extends JPanel {
+public abstract class Row extends JPanel {
 
-    public CleaverRowPanel() {
+    public Row() {
         super();
 
         this.setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));

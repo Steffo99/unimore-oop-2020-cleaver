@@ -2,10 +2,12 @@ package eu.steffo.cleaver.gui;
 
 import javax.swing.*;
 
-public class CleaverTitlePanel extends CleaverRowPanel {
-    protected JLabel titleLabel;
+public class TitleRow extends Row {
+    protected final JLabel titleLabel;
 
-    public CleaverTitlePanel(String str) {
+    public TitleRow(String str) {
+        super();
+
         this.add(Box.createHorizontalStrut(8));
 
         titleLabel = new JLabel(str);

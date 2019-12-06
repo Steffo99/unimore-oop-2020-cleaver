@@ -4,19 +4,24 @@ import java.awt.*;
 import javax.swing.*;
 import java.io.File;
 
-public class CleaverFileSelectPanel extends CleaverRowPanel {
-    protected JFileChooser fileChooser;
-    protected JButton selectFilesButton;
-    protected JTextField selectedFilesText;
+public class FileSelectRow extends Row {
+    protected final JFileChooser fileChooser;
+    protected final JButton selectFilesButton;
+    protected final JTextField selectedFilesText;
     protected File[] selectedFiles;
 
-    public CleaverFileSelectPanel() {
+    public FileSelectRow() {
         super();
 
         fileChooser = new JFileChooser();
         fileChooser.setMultiSelectionEnabled(true);
 
         this.add(Box.createHorizontalStrut(8));
+
+        selectedFilesText = new JTextField();
+        selectedFilesText.setMinimumSize(new Dimension(200, 24));
+        selectedFilesText.setPreferredSize(new Dimension(200, 24));
+        selectedFilesText.setEditable(false);
 
         selectFilesButton = new JButton("Select files...");
         selectFilesButton.addActionListener(e -> {
@@ -38,10 +43,6 @@ public class CleaverFileSelectPanel extends CleaverRowPanel {
 
         this.add(Box.createHorizontalStrut(8));
 
-        selectedFilesText = new JTextField();
-        selectedFilesText.setMinimumSize(new Dimension(200, 24));
-        selectedFilesText.setPreferredSize(new Dimension(200, 24));
-        selectedFilesText.setEditable(false);
         this.add(selectedFilesText);
 
         this.add(Box.createHorizontalStrut(8));

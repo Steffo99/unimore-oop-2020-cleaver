@@ -1,13 +1,13 @@
 package eu.steffo.cleaver.gui;
 
-public class CleaverChopPanel extends CleaverCreateJobPanel {
+public class ChopPanel extends CreateJobPanel {
 
     @Override
     protected String getPanelText() {
         return "Chop";
     }
 
-    public CleaverChopPanel() {
+    public ChopPanel() {
         super();
     }
 }
