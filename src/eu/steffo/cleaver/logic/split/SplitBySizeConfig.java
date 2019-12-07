@@ -10,4 +10,9 @@ public class SplitBySizeConfig extends SplitConfig {
     public int getSize() {
         return size;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%d bytes", this.size);
+    }
 }

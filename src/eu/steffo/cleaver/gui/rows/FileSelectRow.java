@@ -1,4 +1,6 @@
-package eu.steffo.cleaver.gui;
+package eu.steffo.cleaver.gui.rows;
+
+import eu.steffo.cleaver.gui.rows.Row;
 
 import java.awt.*;
 import javax.swing.*;
@@ -8,7 +10,6 @@ public class FileSelectRow extends Row {
     protected final JFileChooser fileChooser;
     protected final JButton selectFilesButton;
     protected final JTextField selectedFilesText;
-    protected File[] selectedFiles;
 
     public FileSelectRow() {
         super();
@@ -26,20 +27,9 @@ public class FileSelectRow extends Row {
         selectFilesButton = new JButton("Select files...");
         selectFilesButton.addActionListener(e -> {
             fileChooser.showOpenDialog(this);
-
-            selectedFiles = fileChooser.getSelectedFiles();
-
-            StringBuilder displayedText = new StringBuilder();
-            for (File file : selectedFiles) {
-                displayedText.append("\"");
-                displayedText.append(file.getName());
-                displayedText.append("\" ");
-            }
-
-            selectedFilesText.setText(displayedText.toString());
+            this.update();
         });
         this.add(selectFilesButton);
-        selectedFiles = new File[0];
 
         this.add(Box.createHorizontalStrut(8));
 
@@ -49,6 +39,21 @@ public class FileSelectRow extends Row {
     }
 
     public File[] getSelectedFiles() {
-        return selectedFiles;
+        return fileChooser.getSelectedFiles();
+    }
+
+    protected void update() {
+        StringBuilder displayedText = new StringBuilder();
+        for (File file : fileChooser.getSelectedFiles()) {
+            displayedText.append("\"");
+            displayedText.append(file.getName());
+            displayedText.append("\" ");
+        }
+        selectedFilesText.setText(displayedText.toString());
+    }
+
+    public void clearSelectedFiles() {
+        fileChooser.setSelectedFiles(new File[0]);
+        update();
     }
 }

@@ -10,4 +10,9 @@ public class SplitByPartsConfig extends SplitConfig {
     public int getParts() {
         return parts;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%d parts", this.parts);
+    }
 }

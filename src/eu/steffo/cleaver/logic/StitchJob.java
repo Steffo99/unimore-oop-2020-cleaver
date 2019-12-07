@@ -11,4 +11,9 @@ public class StitchJob extends Job {
     public StitchJob(File file, SplitConfig splitConfig, CryptConfig cryptConfig, CompressConfig compressConfig) {
         super(file, splitConfig, cryptConfig, compressConfig);
     }
+
+    @Override
+    public String getType() {
+        return "Stitch";
+    }
 }

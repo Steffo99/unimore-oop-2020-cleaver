@@ -1,4 +1,4 @@
-package eu.steffo.cleaver.gui;
+package eu.steffo.cleaver.gui.rows;
 
 import java.awt.*;
 import javax.swing.*;

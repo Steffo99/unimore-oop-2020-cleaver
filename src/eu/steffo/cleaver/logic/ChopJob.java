@@ -11,4 +11,9 @@ public class ChopJob extends Job {
     public ChopJob(File file, SplitConfig splitConfig, CryptConfig cryptConfig, CompressConfig compressConfig) {
         super(file, splitConfig, cryptConfig, compressConfig);
     }
+
+    @Override
+    public String getType() {
+        return "Chop";
+    }
 }

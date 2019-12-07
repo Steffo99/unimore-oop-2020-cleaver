@@ -6,7 +6,7 @@ import eu.steffo.cleaver.logic.compress.CompressConfig;
 import eu.steffo.cleaver.logic.crypt.CryptConfig;
 import eu.steffo.cleaver.logic.split.SplitConfig;
 
-public class Job {
+public abstract class Job {
     protected File file;
     protected SplitConfig splitConfig;
     protected CryptConfig cryptConfig;
@@ -18,6 +18,8 @@ public class Job {
         this.cryptConfig = cryptConfig;
         this.compressConfig = compressConfig;
     }
+
+    public abstract String getType();
 
     public File getFile() {
         return file;

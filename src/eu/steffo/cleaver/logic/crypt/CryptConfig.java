@@ -10,4 +10,9 @@ public class CryptConfig {
     public String getKey() {
         return key;
     }
+
+    @Override
+    public String toString() {
+        return this.key;
+    }
 }
