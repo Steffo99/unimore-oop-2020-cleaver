@@ -71,9 +71,10 @@ public class JobsTablePanel extends JPanel {
                     if(c == null) return "";
                     return c.toString();
                 case 5:
-                    return "Not started";  // TODO
+                    return job.getProgress().toString();
+
             }
-            return "???";
+            return "Unknown";
         }
     }
 

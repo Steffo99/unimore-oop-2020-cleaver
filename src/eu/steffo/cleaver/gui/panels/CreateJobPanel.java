@@ -67,13 +67,28 @@ public abstract class CreateJobPanel extends JPanel {
     }
 
     public void createAndAddJobs(ArrayList<Job> jobs) {
+        if(fileSelectPanel.getSelectedFiles().length == 0) {
+            JOptionPane.showMessageDialog(null, "No files selected.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
         for(File file : fileSelectPanel.getSelectedFiles()) {
+
+            SplitConfig sc;
             try {
-                Job job = getJobClass().getConstructor(File.class, SplitConfig.class, CryptConfig.class, CompressConfig.class).newInstance(file, splitOptionPanel.getSplitConfig(), cryptOptionPanel.getCryptConfig(), compressOptionPanel.getCompressConfig());
+                sc = splitOptionPanel.getSplitConfig();
+            } catch (NumberFormatException exc) {
+                JOptionPane.showMessageDialog(null, "Invalid value in the Split fields.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            CryptConfig cc = cryptOptionPanel.getCryptConfig();
+
+            CompressConfig zc = compressOptionPanel.getCompressConfig();
+
+            try {
+                Job job = getJobClass().getConstructor(File.class, SplitConfig.class, CryptConfig.class, CompressConfig.class).newInstance(file, sc, cc, zc);
                 jobs.add(job);
             } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
-                // TODO: open an error jframe instead
-                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, ex.toString(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
         fileSelectPanel.clearSelectedFiles();

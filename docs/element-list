@@ -6,4 +6,5 @@ eu.steffo.cleaver.gui.rows.option
 eu.steffo.cleaver.logic
 eu.steffo.cleaver.logic.compress
 eu.steffo.cleaver.logic.crypt
+eu.steffo.cleaver.logic.progress
 eu.steffo.cleaver.logic.split

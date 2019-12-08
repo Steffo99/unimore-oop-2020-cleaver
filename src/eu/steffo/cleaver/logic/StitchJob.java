@@ -16,4 +16,9 @@ public class StitchJob extends Job {
     public String getType() {
         return "Stitch";
     }
+
+    @Override
+    public void run() {
+
+    }
 }

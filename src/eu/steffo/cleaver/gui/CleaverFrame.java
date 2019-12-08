@@ -4,6 +4,7 @@ import eu.steffo.cleaver.gui.panels.ChopAndStitchPanel;
 import eu.steffo.cleaver.gui.panels.JobsButtonsPanel;
 import eu.steffo.cleaver.gui.panels.JobsTablePanel;
 import eu.steffo.cleaver.logic.Job;
+import eu.steffo.cleaver.logic.progress.NotStartedProgress;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -72,7 +73,14 @@ public class CleaverFrame extends JFrame {
         ActionListener startListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO
+                for(Job job : jobs) {
+                    if(job.getProgress().getClass() == NotStartedProgress.class)
+                    {
+                        job.start();
+                    }
+                    // TODO: refresh the jobs table every once in a while
+                    // TODO: catch exceptions from the jobs
+                }
             }
         };
 
