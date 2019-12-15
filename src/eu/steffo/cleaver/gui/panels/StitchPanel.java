@@ -1,7 +1,9 @@
 package eu.steffo.cleaver.gui.panels;
 
+import eu.steffo.cleaver.errors.ChpFileError;
+import eu.steffo.cleaver.errors.ProgrammingError;
 import eu.steffo.cleaver.gui.rows.CreateJobButtonRow;
-import eu.steffo.cleaver.gui.rows.option.CryptRow;
+import eu.steffo.cleaver.gui.rows.option.KeyRow;
 import eu.steffo.cleaver.logic.Job;
 import eu.steffo.cleaver.logic.StitchJob;
 
@@ -13,7 +15,7 @@ import java.util.ArrayList;
 
 public class StitchPanel extends CreateJobPanel {
     protected final CreateJobButtonRow createJobButtonPanel;
-    protected final CryptRow cryptOptionPanel;
+    protected final KeyRow keyOptionRow;
 
     @Override
     protected String getPanelText() {
@@ -32,8 +34,8 @@ public class StitchPanel extends CreateJobPanel {
         this.add(Box.createVerticalStrut(24));
         this.add(Box.createVerticalStrut(8));
 
-        cryptOptionPanel = new CryptRow();
-        this.add(cryptOptionPanel);
+        keyOptionRow = new KeyRow();
+        this.add(keyOptionRow);
 
         this.add(Box.createVerticalStrut(8));
         this.add(Box.createVerticalStrut(24));
@@ -50,7 +52,15 @@ public class StitchPanel extends CreateJobPanel {
     public void createAndAddJobs(ArrayList<Job> jobs) {
         File[] files = fileSelectPanel.getSelectedFiles();
         for(File file : files) {
-            job
+            try {
+                Job job = new StitchJob(file, keyOptionRow.getKey());
+                jobs.add(job);
+            } catch (ChpFileError ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (ProgrammingError ex) {
+                JOptionPane.showMessageDialog(null, ex.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
+        fileSelectPanel.clearSelectedFiles();
     }
 }

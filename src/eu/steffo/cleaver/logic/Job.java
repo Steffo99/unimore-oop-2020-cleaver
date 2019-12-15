@@ -9,12 +9,18 @@ import eu.steffo.cleaver.logic.progress.Progress;
 import eu.steffo.cleaver.logic.split.SplitConfig;
 
 public abstract class Job extends Thread {
-    protected final File file;
+    protected File file;
+    protected SplitConfig splitConfig;
+    protected CryptConfig cryptConfig;
+    protected CompressConfig compressConfig;
     protected Progress progress;
 
     public Job(File file) {
         this.file = file;
         this.progress = new NotStartedProgress();
+        splitConfig = null;
+        cryptConfig = null;
+        compressConfig = null;
     }
 
     public abstract String getType();
@@ -25,5 +31,17 @@ public abstract class Job extends Thread {
 
     public Progress getProgress() {
         return progress;
+    }
+
+    public SplitConfig getSplitConfig() {
+        return splitConfig;
+    }
+
+    public CryptConfig getCryptConfig() {
+        return cryptConfig;
+    }
+
+    public CompressConfig getCompressConfig() {
+        return compressConfig;
     }
 }

@@ -23,24 +23,23 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class StitchJob extends Job {
-    protected final SplitConfig splitConfig;
-    protected final CryptConfig cryptConfig;
-    protected final CompressConfig compressConfig;
 
     public StitchJob(File file, String cryptKey) throws ChpFileError, ProgrammingError {
         super(file);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = null;
+        DocumentBuilder builder;
         try {
             builder = factory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
             throw new ProgrammingError();
         }
-        Document doc = null;
+        Document doc;
         try {
             doc = builder.parse(file);
-        } catch (SAXException | IOException e) {
+        } catch (SAXException e) {
             throw new ProgrammingError();
+        } catch (IOException e) {
+            throw new ChpFileError(".chp file does not exist anymore!");
         }
         Element root = doc.getDocumentElement();
         NodeList splits = root.getElementsByTagName("Split");
@@ -49,10 +48,7 @@ public class StitchJob extends Job {
         Node splitNode = splits.item(0);
         Node cryptNode = crypts.item(0);
         Node compressNode = compresses.item(0);
-        if(splitNode == null) {
-            splitConfig = null;
-        }
-        else {
+        if(splitNode != null) {
             Element split = (Element)splitNode;
             String splitMode = split.getAttribute("mode");
             if(splitMode.equals("by-parts")) {
@@ -62,19 +58,13 @@ public class StitchJob extends Job {
                 splitConfig = new SplitBySizeConfig(Integer.parseInt(split.getTextContent()));
             }
             else {
-                throw new ChpFileError();
+                throw new ChpFileError(".chp file contains invalid split mode!");
             }
         }
-        if(cryptNode == null) {
-            cryptConfig = null;
-        }
-        else {
+        if(cryptNode != null) {
             cryptConfig = new CryptConfig(cryptKey);
         }
-        if(compressNode == null) {
-            compressConfig = null;
-        }
-        else {
+        if(compressNode != null) {
             compressConfig = new CompressConfig();
         }
     }
@@ -86,18 +76,6 @@ public class StitchJob extends Job {
 
     @Override
     public void run() {
-
-    }
-
-    public SplitConfig getSplitConfig() {
-        return splitConfig;
-    }
-
-    public CryptConfig getCryptConfig() {
-        return cryptConfig;
-    }
-
-    public CompressConfig getCompressConfig() {
-        return compressConfig;
+        System.out.println("STITCH");
     }
 }

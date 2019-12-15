@@ -13,6 +13,6 @@ public class CryptConfig {
 
     @Override
     public String toString() {
-        return this.key;
+        return "••••••••";
     }
 }
