@@ -11,9 +11,15 @@ import java.io.OutputStream;
 import java.util.zip.DeflaterOutputStream;
 
 public class ChopJob extends Job {
+    protected final SplitConfig splitConfig;
+    protected final CryptConfig cryptConfig;
+    protected final CompressConfig compressConfig;
 
     public ChopJob(File file, SplitConfig splitConfig, CryptConfig cryptConfig, CompressConfig compressConfig) {
-        super(file, splitConfig, cryptConfig, compressConfig);
+        super(file);
+        this.splitConfig = splitConfig;
+        this.cryptConfig = cryptConfig;
+        this.compressConfig = compressConfig;
     }
 
     @Override
@@ -36,5 +42,17 @@ public class ChopJob extends Job {
         // TODO: create a SplitFileOutputStream to output to multiple files, or use a simple FileOutputStream to output to a single file
 
         // TODO: end with inputStream.transferTo(outputStream);
+    }
+
+    public SplitConfig getSplitConfig() {
+        return splitConfig;
+    }
+
+    public CryptConfig getCryptConfig() {
+        return cryptConfig;
+    }
+
+    public CompressConfig getCompressConfig() {
+        return compressConfig;
     }
 }

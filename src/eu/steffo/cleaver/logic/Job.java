@@ -10,16 +10,10 @@ import eu.steffo.cleaver.logic.split.SplitConfig;
 
 public abstract class Job extends Thread {
     protected final File file;
-    protected final SplitConfig splitConfig;
-    protected final CryptConfig cryptConfig;
-    protected final CompressConfig compressConfig;
     protected Progress progress;
 
-    public Job(File file, SplitConfig splitConfig, CryptConfig cryptConfig, CompressConfig compressConfig) {
+    public Job(File file) {
         this.file = file;
-        this.splitConfig = splitConfig;
-        this.cryptConfig = cryptConfig;
-        this.compressConfig = compressConfig;
         this.progress = new NotStartedProgress();
     }
 
@@ -27,18 +21,6 @@ public abstract class Job extends Thread {
 
     public File getFile() {
         return file;
-    }
-
-    public SplitConfig getSplitConfig() {
-        return splitConfig;
-    }
-
-    public CryptConfig getCryptConfig() {
-        return cryptConfig;
-    }
-
-    public CompressConfig getCompressConfig() {
-        return compressConfig;
     }
 
     public Progress getProgress() {

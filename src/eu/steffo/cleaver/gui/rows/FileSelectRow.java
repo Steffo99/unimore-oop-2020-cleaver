@@ -4,6 +4,7 @@ import eu.steffo.cleaver.gui.rows.Row;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.io.File;
 
 public class FileSelectRow extends Row {
@@ -55,5 +56,9 @@ public class FileSelectRow extends Row {
     public void clearSelectedFiles() {
         fileChooser.setSelectedFiles(new File[0]);
         update();
+    }
+
+    public void setFileFilter(FileFilter filter) {
+        fileChooser.setFileFilter(filter);
     }
 }
