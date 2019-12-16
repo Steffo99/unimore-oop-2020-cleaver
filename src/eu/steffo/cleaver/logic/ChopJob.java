@@ -2,6 +2,7 @@ package eu.steffo.cleaver.logic;
 
 import eu.steffo.cleaver.logic.compress.CompressConfig;
 import eu.steffo.cleaver.logic.crypt.CryptConfig;
+import eu.steffo.cleaver.logic.progress.FinishedProgress;
 import eu.steffo.cleaver.logic.split.SplitConfig;
 
 import java.io.File;
@@ -9,10 +10,7 @@ import java.io.File;
 public class ChopJob extends Job {
 
     public ChopJob(File file, SplitConfig splitConfig, CryptConfig cryptConfig, CompressConfig compressConfig) {
-        super(file);
-        this.splitConfig = splitConfig;
-        this.cryptConfig = cryptConfig;
-        this.compressConfig = compressConfig;
+        this(file, null, splitConfig, cryptConfig, compressConfig);
     }
 
     public ChopJob(File file, Runnable swingCallLaterOnProgressChanges, SplitConfig splitConfig, CryptConfig cryptConfig, CompressConfig compressConfig) {
@@ -29,6 +27,7 @@ public class ChopJob extends Job {
 
     @Override
     public void run() {
+        this.setProgress(new FinishedProgress());
     }
 
     public SplitConfig getSplitConfig() {

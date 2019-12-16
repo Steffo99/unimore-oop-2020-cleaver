@@ -27,6 +27,9 @@ public abstract class Job extends Thread {
     public Job(File file, Runnable swingCallLaterOnProgressChanges) {
         this(file);
         this.swingCallLaterOnProgressChanges = swingCallLaterOnProgressChanges;
+        if(swingCallLaterOnProgressChanges != null) {
+            SwingUtilities.invokeLater(swingCallLaterOnProgressChanges);
+        }
     }
 
     public abstract String getType();
@@ -41,7 +44,9 @@ public abstract class Job extends Thread {
 
     protected void setProgress(Progress progress) {
         this.progress = progress;
-        SwingUtilities.invokeLater(swingCallLaterOnProgressChanges);
+        if(swingCallLaterOnProgressChanges != null) {
+            SwingUtilities.invokeLater(swingCallLaterOnProgressChanges);
+        }
     }
 
     public SplitConfig getSplitConfig() {

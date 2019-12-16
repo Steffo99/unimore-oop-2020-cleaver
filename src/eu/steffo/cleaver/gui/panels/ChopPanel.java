@@ -27,11 +27,6 @@ public class ChopPanel extends CreateJobPanel {
         return "Chop";
     }
 
-    @Override
-    protected Class<? extends Job> getJobClass() {
-        return ChopJob.class;
-    }
-
     public ChopPanel(ActionListener onCreateJobClick) {
         super(onCreateJobClick);
 
@@ -58,7 +53,7 @@ public class ChopPanel extends CreateJobPanel {
         this.add(Box.createVerticalStrut(8));
     }
 
-    public void createAndAddJobs(ArrayList<Job> jobs) {
+    public void createAndAddJobs(ArrayList<Job> jobs, Runnable updateTable) {
         if(fileSelectPanel.getSelectedFiles().length == 0) {
             JOptionPane.showMessageDialog(null, "No files selected.", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -76,12 +71,9 @@ public class ChopPanel extends CreateJobPanel {
 
             CompressConfig zc = compressOptionPanel.getCompressConfig();
 
-            try {
-                Job job = getJobClass().getConstructor(File.class, SplitConfig.class, CryptConfig.class, CompressConfig.class).newInstance(file, sc, cc, zc);
-                jobs.add(job);
-            } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
-                JOptionPane.showMessageDialog(null, ex.toString(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
+            Job job = new ChopJob(file, updateTable, sc, cc, zc);
+            jobs.add(job);
+
         }
         fileSelectPanel.clearSelectedFiles();
     }

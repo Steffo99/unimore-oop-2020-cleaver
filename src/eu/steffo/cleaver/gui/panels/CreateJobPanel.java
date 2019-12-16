@@ -13,8 +13,6 @@ public abstract class CreateJobPanel extends JPanel {
 
     protected abstract String getPanelText();
 
-    protected abstract Class<? extends Job> getJobClass();
-
     public CreateJobPanel(ActionListener onCreateJobClick) {
         super();
 

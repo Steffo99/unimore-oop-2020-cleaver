@@ -22,11 +22,6 @@ public class StitchPanel extends CreateJobPanel {
         return "Stitch";
     }
 
-    @Override
-    protected Class<? extends Job> getJobClass() {
-        return StitchJob.class;
-    }
-
     public StitchPanel(ActionListener onCreateJobClick) {
         super(onCreateJobClick);
 
@@ -49,11 +44,11 @@ public class StitchPanel extends CreateJobPanel {
         fileSelectPanel.setFileFilter(new FileNameExtensionFilter("Cleaver Metadata (*.chp)", "chp"));
     }
 
-    public void createAndAddJobs(ArrayList<Job> jobs) {
+    public void createAndAddJobs(ArrayList<Job> jobs, Runnable updateTable) {
         File[] files = fileSelectPanel.getSelectedFiles();
         for(File file : files) {
             try {
-                Job job = new StitchJob(file, keyOptionRow.getKey());
+                Job job = new StitchJob(file, updateTable, keyOptionRow.getKey());
                 jobs.add(job);
             } catch (ChpFileError ex) {
                 JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

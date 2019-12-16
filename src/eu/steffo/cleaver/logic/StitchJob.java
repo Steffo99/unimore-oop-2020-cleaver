@@ -4,6 +4,7 @@ import eu.steffo.cleaver.errors.ChpFileError;
 import eu.steffo.cleaver.errors.ProgrammingError;
 import eu.steffo.cleaver.logic.compress.CompressConfig;
 import eu.steffo.cleaver.logic.crypt.CryptConfig;
+import eu.steffo.cleaver.logic.progress.FinishedProgress;
 import eu.steffo.cleaver.logic.split.SplitByPartsConfig;
 import eu.steffo.cleaver.logic.split.SplitBySizeConfig;
 import eu.steffo.cleaver.logic.split.SplitConfig;
@@ -25,7 +26,11 @@ import java.io.IOException;
 public class StitchJob extends Job {
 
     public StitchJob(File file, String cryptKey) throws ChpFileError, ProgrammingError {
-        super(file);
+        this(file, null, cryptKey);
+    }
+
+    public StitchJob(File file, Runnable updateTable, String cryptKey) throws ChpFileError, ProgrammingError {
+        super(file, updateTable);
         parseChp(openChp(file), cryptKey);
     }
 
@@ -84,6 +89,6 @@ public class StitchJob extends Job {
 
     @Override
     public void run() {
-
+        this.setProgress(new FinishedProgress());
     }
 }

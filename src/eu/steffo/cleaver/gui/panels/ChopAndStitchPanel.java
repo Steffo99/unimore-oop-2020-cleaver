@@ -28,11 +28,11 @@ public class ChopAndStitchPanel extends JPanel {
         this.add(Box.createHorizontalStrut(4));
     }
 
-    public void createAndAddChopJobs(ArrayList<Job> jobs) {
-        chopPanel.createAndAddJobs(jobs);
+    public void createAndAddChopJobs(ArrayList<Job> jobs, Runnable updateTable) {
+        chopPanel.createAndAddJobs(jobs, updateTable);
     }
 
-    public void createAndAddStitchJobs(ArrayList<Job> jobs) {
-        stitchPanel.createAndAddJobs(jobs);
+    public void createAndAddStitchJobs(ArrayList<Job> jobs, Runnable updateTable) {
+        stitchPanel.createAndAddJobs(jobs, updateTable);
     }
 }

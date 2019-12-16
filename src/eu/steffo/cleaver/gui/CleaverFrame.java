@@ -35,16 +35,14 @@ public class CleaverFrame extends JFrame {
         ActionListener chopListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                chopStitchPanel.createAndAddChopJobs(jobs);
-                jobsTablePanel.updateTableChanged();
+                chopStitchPanel.createAndAddChopJobs(jobs, jobsTablePanel::updateTableChanged);
             }
         };
 
         ActionListener stitchListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                chopStitchPanel.createAndAddStitchJobs(jobs);
-                jobsTablePanel.updateTableChanged();
+                chopStitchPanel.createAndAddStitchJobs(jobs, jobsTablePanel::updateTableChanged);
             }
         };
 
@@ -74,12 +72,10 @@ public class CleaverFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 for(Job job : jobs) {
-                    if(job.getProgress().getClass() == NotStartedProgress.class)
+                    if(job.getProgress() instanceof NotStartedProgress)
                     {
                         job.start();
                     }
-                    // TODO: refresh the jobs table every once in a while
-                    // TODO: catch exceptions from the jobs
                 }
             }
         };
