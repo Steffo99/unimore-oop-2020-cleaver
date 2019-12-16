@@ -53,12 +53,12 @@ public class ChopJob extends Job {
                 partSize = ((SplitBySizeConfig)splitConfig).getSize();
             }
             else if(splitConfig instanceof SplitByPartsConfig) {
-                partSize = ((SplitByPartsConfig)splitConfig).getParts();
+                partSize = file.length() / ((SplitByPartsConfig)splitConfig).getParts();
             }
             else {
                 partSize = file.length();
             }
-            OutputStream outputStream = new SplitFileOutputStream(file.getName(), partSize);
+            OutputStream outputStream = new SplitFileOutputStream(file.getAbsolutePath(), partSize);
 
             if(compressConfig != null) {
                 outputStream = new DeflaterOutputStream(outputStream);
@@ -70,7 +70,7 @@ public class ChopJob extends Job {
 
             //Create the .chp file
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
+            DocumentBuilder builder;
             try {
                 builder = factory.newDocumentBuilder();
             } catch (ParserConfigurationException e) {
@@ -93,11 +93,11 @@ public class ChopJob extends Job {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(String.format("%s.chp", file.getName()));
+            StreamResult result = new StreamResult(String.format("%s.chp", file.getAbsolutePath()));
             transformer.transform(source, result);
 
             //Actually run the job
-            int bytesUntilNextUpdate = 1024;
+            int bytesUntilNextUpdate = 2048;
             this.setProgress(new WorkingProgress());
 
             int i;
@@ -105,8 +105,8 @@ public class ChopJob extends Job {
                 outputStream.write(i);
                 bytesUntilNextUpdate -= 1;
                 if(bytesUntilNextUpdate <= 0) {
-                    this.setProgress(new WorkingProgress((float)file.length() / (float)partSize));
-                    bytesUntilNextUpdate = 1024;
+                    this.setProgress(new WorkingProgress((float)(file.length() - inputStream.available()) / (float)file.length()));
+                    bytesUntilNextUpdate = 2048;
                 }
             }
 
