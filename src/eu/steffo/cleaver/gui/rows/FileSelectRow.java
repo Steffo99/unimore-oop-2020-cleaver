@@ -17,6 +17,7 @@ public class FileSelectRow extends Row {
 
         fileChooser = new JFileChooser();
         fileChooser.setMultiSelectionEnabled(true);
+        fileChooser.setCurrentDirectory(new File("."));
 
         this.add(Box.createHorizontalStrut(8));
 

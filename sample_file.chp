@@ -1,5 +1,0 @@
-<Cleaver>
-    <Compress/>
-    <Crypt/>
-    <Split mode="by-parts">10</Split>
-</Cleaver>
