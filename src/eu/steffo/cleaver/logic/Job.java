@@ -1,6 +1,7 @@
 package eu.steffo.cleaver.logic;
 
 import java.io.File;
+import javax.swing.SwingUtilities;
 
 import eu.steffo.cleaver.logic.compress.CompressConfig;
 import eu.steffo.cleaver.logic.crypt.CryptConfig;
@@ -10,17 +11,22 @@ import eu.steffo.cleaver.logic.split.SplitConfig;
 
 public abstract class Job extends Thread {
     protected File file;
-    protected SplitConfig splitConfig;
-    protected CryptConfig cryptConfig;
-    protected CompressConfig compressConfig;
-    protected Progress progress;
+
+    private Progress progress;
+    protected Runnable swingCallLaterOnProgressChanges = null;
+
+    protected SplitConfig splitConfig = null;
+    protected CryptConfig cryptConfig = null;
+    protected CompressConfig compressConfig = null;
 
     public Job(File file) {
         this.file = file;
         this.progress = new NotStartedProgress();
-        splitConfig = null;
-        cryptConfig = null;
-        compressConfig = null;
+    }
+
+    public Job(File file, Runnable swingCallLaterOnProgressChanges) {
+        this(file);
+        this.swingCallLaterOnProgressChanges = swingCallLaterOnProgressChanges;
     }
 
     public abstract String getType();
@@ -31,6 +37,11 @@ public abstract class Job extends Thread {
 
     public Progress getProgress() {
         return progress;
+    }
+
+    protected void setProgress(Progress progress) {
+        this.progress = progress;
+        SwingUtilities.invokeLater(swingCallLaterOnProgressChanges);
     }
 
     public SplitConfig getSplitConfig() {

@@ -1,7 +1,7 @@
 package eu.steffo.cleaver.logic.progress;
 
 public class WorkingProgress extends Progress {
-    protected float progress;
+    public final float progress;
 
     public WorkingProgress() {
         this.progress = 0f;
