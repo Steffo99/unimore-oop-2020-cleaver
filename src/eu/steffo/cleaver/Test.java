@@ -7,6 +7,7 @@ import eu.steffo.cleaver.logic.split.SplitFileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+//TODO: delet this
 public class Test {
     public static void main(String[] args) {
         OutputStream stream = new SplitFileOutputStream("test", 64);
