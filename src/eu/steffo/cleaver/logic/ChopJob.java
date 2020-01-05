@@ -4,6 +4,7 @@ import eu.steffo.cleaver.errors.ChpFileError;
 import eu.steffo.cleaver.errors.ProgrammingError;
 import eu.steffo.cleaver.logic.compress.CompressConfig;
 import eu.steffo.cleaver.logic.crypt.CryptConfig;
+import eu.steffo.cleaver.logic.crypt.CryptOutputStream;
 import eu.steffo.cleaver.logic.progress.ErrorProgress;
 import eu.steffo.cleaver.logic.progress.FinishedProgress;
 import eu.steffo.cleaver.logic.progress.WorkingProgress;
@@ -13,7 +14,6 @@ import eu.steffo.cleaver.logic.split.SplitConfig;
 import eu.steffo.cleaver.logic.split.SplitFileOutputStream;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -25,22 +25,52 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.util.zip.DeflaterOutputStream;
 
+/**
+ * A {@link Job} that converts regular files into <i>chopped</i> (*.chp + *.cXX) files.
+ */
 public class ChopJob extends Job {
 
-    public ChopJob(File file, SplitConfig splitConfig, CryptConfig cryptConfig, CompressConfig compressConfig) {
-        this(file, null, splitConfig, cryptConfig, compressConfig);
-    }
+    private final File file;
+    private final SplitConfig splitConfig;
+    private final CryptConfig cryptConfig;
+    private final CompressConfig compressConfig;
 
-    public ChopJob(File file, Runnable swingCallLaterOnProgressChanges, SplitConfig splitConfig, CryptConfig cryptConfig, CompressConfig compressConfig) {
-        super(file, swingCallLaterOnProgressChanges);
+    public ChopJob(File file, SplitConfig splitConfig, CryptConfig cryptConfig, CompressConfig compressConfig, Runnable onProgressChange) {
+        super(onProgressChange);
+        this.file = file;
         this.splitConfig = splitConfig;
         this.cryptConfig = cryptConfig;
         this.compressConfig = compressConfig;
     }
 
+    public ChopJob(File file, SplitConfig splitConfig, CryptConfig cryptConfig, CompressConfig compressConfig) {
+        this(file, splitConfig, cryptConfig, compressConfig, null);
+    }
+
+
     @Override
     public String getType() {
         return "Chop";
+    }
+
+    @Override
+    public File getFile() {
+        return file;
+    }
+
+    @Override
+    public SplitConfig getSplitConfig() {
+        return splitConfig;
+    }
+
+    @Override
+    public CryptConfig getCryptConfig() {
+        return cryptConfig;
+    }
+
+    @Override
+    public CompressConfig getCompressConfig() {
+        return compressConfig;
     }
 
     @Override
@@ -53,7 +83,7 @@ public class ChopJob extends Job {
                 partSize = ((SplitBySizeConfig)splitConfig).getSize();
             }
             else if(splitConfig instanceof SplitByPartsConfig) {
-                partSize = file.length() / ((SplitByPartsConfig)splitConfig).getParts();
+                partSize = (long)Math.ceil((double)file.length() / (double)(((SplitByPartsConfig)splitConfig).getParts()));
             }
             else {
                 partSize = file.length();
@@ -65,7 +95,7 @@ public class ChopJob extends Job {
             }
 
             if(cryptConfig != null) {
-                //TODO
+                outputStream = new CryptOutputStream(outputStream);
             }
 
             //Create the .chp file
@@ -79,6 +109,10 @@ public class ChopJob extends Job {
             Document doc = builder.newDocument();
             Element root = doc.createElement("Cleaver");
             doc.appendChild(root);
+
+            Element original = doc.createElement("Original");
+            original.setTextContent(file.getName());
+            root.appendChild(original);
 
             if(splitConfig != null) {
                 root.appendChild(splitConfig.toElement(doc));
@@ -117,17 +151,5 @@ public class ChopJob extends Job {
         } catch (Throwable e) {
             this.setProgress(new ErrorProgress(e));
         }
-    }
-
-    public SplitConfig getSplitConfig() {
-        return splitConfig;
-    }
-
-    public CryptConfig getCryptConfig() {
-        return cryptConfig;
-    }
-
-    public CompressConfig getCompressConfig() {
-        return compressConfig;
     }
 }

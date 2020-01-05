@@ -61,6 +61,7 @@ public class CleaverFrame extends JFrame {
         this.jobs = jobs;
 
         this.setTitle("Cleaver File Splitter");
+        this.setResizable(false);
 
         Container cp = getContentPane();
 
@@ -71,14 +72,14 @@ public class CleaverFrame extends JFrame {
         ActionListener chopListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                chopStitchPanel.createAndAddChopJobs(jobs, jobsTablePanel::updateTableChanged);
+                chopStitchPanel.createAndAddChopJobs(jobs, jobsTablePanel::updateTable);
             }
         };
 
         ActionListener stitchListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                chopStitchPanel.createAndAddStitchJobs(jobs, jobsTablePanel::updateTableChanged);
+                chopStitchPanel.createAndAddStitchJobs(jobs, jobsTablePanel::updateTable);
             }
         };
 
@@ -100,7 +101,7 @@ public class CleaverFrame extends JFrame {
                 for(int n = removedIndexes.length - 1; n >= 0; n--) {
                     jobs.remove(removedIndexes[n]);
                 }
-                jobsTablePanel.updateTableChanged();
+                jobsTablePanel.updateTable();
             }
         };
 

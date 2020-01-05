@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class SplitFileOutputStream extends OutputStream {
+    //TODO: possibly use a BufferedOutputStream to improve performance?
+
     protected String fileBaseName;
     protected FileOutputStream currentFileOutputStream;
     protected long currentByteCount;

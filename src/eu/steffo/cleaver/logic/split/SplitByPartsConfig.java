@@ -5,12 +5,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class SplitByPartsConfig extends SplitConfig {
-    protected int parts;
+    private int parts;
 
     public SplitByPartsConfig(int parts) {
         this.parts = parts;
     }
 
+    /**
+     * @return The number of parts the file should be split in.
+     */
     public int getParts() {
         return parts;
     }

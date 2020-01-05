@@ -13,42 +13,59 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 
+/**
+ * The {@link CreateJobPanel} allowing the creation of {@link StitchJob StitchJobs}.
+ */
 public class StitchPanel extends CreateJobPanel {
-    protected final CreateJobButtonRow createJobButtonPanel;
+    /**
+     * The {@link eu.steffo.cleaver.gui.rows.Row Row} to select the encryption key.
+     */
     protected final KeyRow keyOptionRow;
+
+    /**
+     * The {@link eu.steffo.cleaver.gui.rows.Row Row} containing the button to create the {@link StitchJob StitchJobs}.
+     */
+    protected final CreateJobButtonRow createJobButtonRow;
 
     @Override
     protected String getPanelText() {
         return "Stitch";
     }
 
+    /**
+     * Construct a StitchPanel.
+     * @param onCreateJobClick The {@link ActionListener} that will be added to the button in the {@link #createJobButtonRow}.
+     */
     public StitchPanel(ActionListener onCreateJobClick) {
-        super(onCreateJobClick);
+        super();
 
-        this.add(Box.createVerticalStrut(8));
-        this.add(Box.createVerticalStrut(24));
-        this.add(Box.createVerticalStrut(8));
+        //Leave the empty space for the split row
+        this.add(Box.createVerticalStrut(40));
 
         keyOptionRow = new KeyRow();
         this.add(keyOptionRow);
 
-        this.add(Box.createVerticalStrut(8));
-        this.add(Box.createVerticalStrut(24));
-        this.add(Box.createVerticalStrut(8));
+        //Leave the empty space for the compress row
+        this.add(Box.createVerticalStrut(40));
 
-        createJobButtonPanel = new CreateJobButtonRow(onCreateJobClick);
-        this.add(createJobButtonPanel);
+        createJobButtonRow = new CreateJobButtonRow(onCreateJobClick);
+        this.add(createJobButtonRow);
 
         this.add(Box.createVerticalStrut(8));
 
         fileSelectPanel.setFileFilter(new FileNameExtensionFilter("Cleaver Metadata (*.chp)", "chp"));
     }
 
-    public void createAndAddJobs(ArrayList<Job> jobs, Runnable updateTable) {
+    /**
+     * Add to the {@link ArrayList jobs ArrayList} the {@link StitchJob StitchJobs} for the current settings.
+     * @param jobs The {@link ArrayList} the {@link StitchJob StitchJobs} should be added to.
+     * @param onProgressChange The function that should be invoked when the {@link Job} {@link eu.steffo.cleaver.logic.progress.Progress Progress} changes.
+     */
+    public void createAndAddJobs(ArrayList<Job> jobs, Runnable onProgressChange) {
         File[] files = fileSelectPanel.getSelectedFiles();
         for(File file : files) {
             try {
-                Job job = new StitchJob(file, updateTable, keyOptionRow.getKey());
+                Job job = new StitchJob(file, keyOptionRow.getKey(), onProgressChange);
                 jobs.add(job);
             } catch (ChpFileError ex) {
                 JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

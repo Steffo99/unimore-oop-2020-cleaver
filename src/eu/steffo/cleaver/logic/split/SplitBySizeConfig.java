@@ -6,12 +6,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
 public class SplitBySizeConfig extends SplitConfig {
-    protected long size;
+    private long size;
 
     public SplitBySizeConfig(long size) {
         this.size = size;
     }
 
+    /**
+     * @return The size in bytes the file parts should be.
+     */
     public long getSize() {
         return size;
     }

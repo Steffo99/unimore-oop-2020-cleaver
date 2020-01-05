@@ -14,11 +14,15 @@ The project specification document is available [here](http://didattica.agentgro
 
 The documentation for this project is available [here](https://gh.steffo.eu/cleaver).
 
-> It hasn't been written yet!
+It is being hosted on GitHub Pages.
 
 ## Screenshots
 
 ### Progress
+
+#### 2020-01-03
+
+![](https://i.imgur.com/4ZUVo2v.png)
 
 #### 2019-12-07
 

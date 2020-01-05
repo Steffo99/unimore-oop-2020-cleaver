@@ -10,12 +10,35 @@ import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * The {@link JPanel Panel} containing the jobs {@link JTable Table}.
+ */
 public class JobsTablePanel extends JPanel {
+    /**
+     * The {@link JScrollPane} wrapping the jobs {@link JTable Table}.
+     */
     protected final JScrollPane tableScrollPane;
+
+    /**
+     * The {@link JobsTableModel TableModel} instance for the {@link JTable Table}.
+     */
     protected final JobsTableModel tableModel;
+
+    /**
+     * The jobs table.
+     */
     protected final JTable table;
+
+    /**
+     * A reference to the {@link ArrayList} of {@link Job Jobs} that should be displayed.
+     */
     protected final ArrayList<Job> jobs;
 
+    /**
+     * The {@link javax.swing.table.TableModel} of the jobs table.
+     *
+     * It is an inner class.
+     */
     public class JobsTableModel extends AbstractTableModel {
         @Override
         public int getRowCount() {
@@ -72,13 +95,15 @@ public class JobsTablePanel extends JPanel {
                     return c.toString();
                 case 5:
                     return job.getProgress().toString();
-
             }
             return "Unknown";
         }
     }
 
-
+    /**
+     * Construct a JobsTablePanel.
+     * @param jobs A reference to the {@link ArrayList} of {@link Job Jobs} that should be displayed in the table.
+     */
     public JobsTablePanel(ArrayList<Job> jobs) {
         super();
 
@@ -96,11 +121,17 @@ public class JobsTablePanel extends JPanel {
         this.add(Box.createHorizontalStrut(4));
     }
 
+    /**
+     * @return The array of the indexes of the jobs that are currently selected in the table.
+     */
     public int[] getSelectedJobsIndexes() {
         return table.getSelectedRows();
     }
 
-    public void updateTableChanged() {
+    /**
+     * Refresh the table, updating all data inside it.
+     */
+    public void updateTable() {
         tableModel.fireTableDataChanged();
     }
 }
