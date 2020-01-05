@@ -1,13 +1,13 @@
 package eu.steffo.cleaver.gui.panels;
 
-import eu.steffo.cleaver.gui.rows.FileSelectRow;
-import eu.steffo.cleaver.gui.rows.TitleRow;
+import eu.steffo.cleaver.gui.panels.rows.FileSelectRow;
+import eu.steffo.cleaver.gui.panels.rows.TitleRow;
 
 import javax.swing.*;
 
 /**
  * The base class for the two job creation panels ({@link ChopPanel} and {@link StitchPanel}).
- * It uses a <i>vertical</i> layout; therefore, {@link eu.steffo.cleaver.gui.rows.Row Rows} are added to it.
+ * It uses a <i>vertical</i> layout; therefore, {@link eu.steffo.cleaver.gui.panels.rows.Row Rows} are added to it.
  */
 public abstract class CreateJobPanel extends JPanel {
     /**

@@ -9,8 +9,8 @@ open module eu.steffo.cleaver {
     exports eu.steffo.cleaver.errors;
     exports eu.steffo.cleaver.gui;
     exports eu.steffo.cleaver.gui.panels;
-    exports eu.steffo.cleaver.gui.rows;
-    exports eu.steffo.cleaver.gui.rows.option;
+    exports eu.steffo.cleaver.gui.panels.rows;
+    exports eu.steffo.cleaver.gui.panels.rows.option;
     exports eu.steffo.cleaver.logic;
     exports eu.steffo.cleaver.logic.compress;
     exports eu.steffo.cleaver.logic.crypt;

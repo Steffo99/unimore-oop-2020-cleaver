@@ -2,8 +2,8 @@ package eu.steffo.cleaver.gui.panels;
 
 import eu.steffo.cleaver.errors.ChpFileError;
 import eu.steffo.cleaver.errors.ProgrammingError;
-import eu.steffo.cleaver.gui.rows.CreateJobButtonRow;
-import eu.steffo.cleaver.gui.rows.option.KeyRow;
+import eu.steffo.cleaver.gui.panels.rows.CreateJobButtonRow;
+import eu.steffo.cleaver.gui.panels.rows.option.KeyRow;
 import eu.steffo.cleaver.logic.Job;
 import eu.steffo.cleaver.logic.StitchJob;
 
@@ -18,12 +18,12 @@ import java.util.ArrayList;
  */
 public class StitchPanel extends CreateJobPanel {
     /**
-     * The {@link eu.steffo.cleaver.gui.rows.Row Row} to select the encryption key.
+     * The {@link eu.steffo.cleaver.gui.panels.rows.Row Row} to select the encryption key.
      */
     protected final KeyRow keyOptionRow;
 
     /**
-     * The {@link eu.steffo.cleaver.gui.rows.Row Row} containing the button to create the {@link StitchJob StitchJobs}.
+     * The {@link eu.steffo.cleaver.gui.panels.rows.Row Row} containing the button to create the {@link StitchJob StitchJobs}.
      */
     protected final CreateJobButtonRow createJobButtonRow;
 

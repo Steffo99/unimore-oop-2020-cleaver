@@ -1,9 +1,9 @@
 package eu.steffo.cleaver.gui.panels;
 
-import eu.steffo.cleaver.gui.rows.CreateJobButtonRow;
-import eu.steffo.cleaver.gui.rows.option.CompressRow;
-import eu.steffo.cleaver.gui.rows.option.CryptRow;
-import eu.steffo.cleaver.gui.rows.option.SplitRow;
+import eu.steffo.cleaver.gui.panels.rows.CreateJobButtonRow;
+import eu.steffo.cleaver.gui.panels.rows.option.CompressRow;
+import eu.steffo.cleaver.gui.panels.rows.option.CryptRow;
+import eu.steffo.cleaver.gui.panels.rows.option.SplitRow;
 import eu.steffo.cleaver.logic.ChopJob;
 import eu.steffo.cleaver.logic.Job;
 import eu.steffo.cleaver.logic.compress.CompressConfig;
@@ -20,22 +20,22 @@ import java.util.ArrayList;
  */
 public class ChopPanel extends CreateJobPanel {
     /**
-     * The {@link eu.steffo.cleaver.gui.rows.Row Row} to enable/disable the file split functionality.
+     * The {@link eu.steffo.cleaver.gui.panels.rows.Row Row} to enable/disable the file split functionality.
      */
     protected final SplitRow splitRow;
 
     /**
-     * The {@link eu.steffo.cleaver.gui.rows.Row Row} to enable/disable the encryption functionality.
+     * The {@link eu.steffo.cleaver.gui.panels.rows.Row Row} to enable/disable the encryption functionality.
      */
     protected final CryptRow cryptRow;
 
     /**
-     * The {@link eu.steffo.cleaver.gui.rows.Row Row} to enable/disable the compression functionality.
+     * The {@link eu.steffo.cleaver.gui.panels.rows.Row Row} to enable/disable the compression functionality.
      */
     protected final CompressRow compressRow;
 
     /**
-     * The {@link eu.steffo.cleaver.gui.rows.Row Row} containing the button to create the {@link ChopJob ChopJobs}.
+     * The {@link eu.steffo.cleaver.gui.panels.rows.Row Row} containing the button to create the {@link ChopJob ChopJobs}.
      */
     protected final CreateJobButtonRow createJobButtonRow;
 

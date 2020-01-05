@@ -22,8 +22,8 @@ public class ChopAndStitchPanel extends JPanel {
 
     /**
      * Construct a ChopAndStitchPanel by instantiating and adding a {@link ChopPanel} and a {@link StitchPanel} to it.
-     * @param onCreateChopJobClick The {@link ActionListener} that will be bound to the {@link eu.steffo.cleaver.gui.rows.CreateJobButtonRow CreateJobButton} of the {@link ChopPanel}.
-     * @param onCreateStitchJobClick The {@link ActionListener} that will be bound to the {@link eu.steffo.cleaver.gui.rows.CreateJobButtonRow CreateJobButton} of the {@link StitchPanel}.
+     * @param onCreateChopJobClick The {@link ActionListener} that will be bound to the {@link eu.steffo.cleaver.gui.panels.rows.CreateJobButtonRow CreateJobButton} of the {@link ChopPanel}.
+     * @param onCreateStitchJobClick The {@link ActionListener} that will be bound to the {@link eu.steffo.cleaver.gui.panels.rows.CreateJobButtonRow CreateJobButton} of the {@link StitchPanel}.
      */
     public ChopAndStitchPanel(ActionListener onCreateChopJobClick, ActionListener onCreateStitchJobClick) {
         super();
