@@ -1,6 +1,5 @@
 package eu.steffo.cleaver.logic;
 
-import eu.steffo.cleaver.errors.ChpFileError;
 import eu.steffo.cleaver.errors.ProgrammingError;
 import eu.steffo.cleaver.logic.compress.CompressConfig;
 import eu.steffo.cleaver.logic.crypt.CryptConfig;
@@ -8,8 +7,6 @@ import eu.steffo.cleaver.logic.crypt.CryptOutputStream;
 import eu.steffo.cleaver.logic.progress.ErrorProgress;
 import eu.steffo.cleaver.logic.progress.FinishedProgress;
 import eu.steffo.cleaver.logic.progress.WorkingProgress;
-import eu.steffo.cleaver.logic.split.SplitByPartsConfig;
-import eu.steffo.cleaver.logic.split.SplitBySizeConfig;
 import eu.steffo.cleaver.logic.split.SplitConfig;
 import eu.steffo.cleaver.logic.split.SplitFileOutputStream;
 import org.w3c.dom.Document;
@@ -77,18 +74,14 @@ public class ChopJob extends Job {
     public void run() {
         try {
             InputStream inputStream = new FileInputStream(file);
-            long partSize;
+            OutputStream outputStream;
 
-            if(splitConfig instanceof SplitBySizeConfig) {
-                partSize = ((SplitBySizeConfig)splitConfig).getSize();
-            }
-            else if(splitConfig instanceof SplitByPartsConfig) {
-                partSize = (long)Math.ceil((double)file.length() / (double)(((SplitByPartsConfig)splitConfig).getParts()));
+            if(splitConfig != null) {
+                outputStream = new SplitFileOutputStream(file.getAbsolutePath(), splitConfig.getPartSize());
             }
             else {
-                partSize = file.length();
+                outputStream = new FileOutputStream(String.format("%s.c00", file.getAbsolutePath()));
             }
-            OutputStream outputStream = new SplitFileOutputStream(file.getAbsolutePath(), partSize);
 
             if(compressConfig != null) {
                 outputStream = new DeflaterOutputStream(outputStream);
@@ -130,7 +123,7 @@ public class ChopJob extends Job {
             StreamResult result = new StreamResult(String.format("%s.chp", file.getAbsolutePath()));
             transformer.transform(source, result);
 
-            //Actually run the job
+            //Pipe everything to the output
             int bytesUntilNextUpdate = 2048;
             this.setProgress(new WorkingProgress());
 

@@ -87,7 +87,7 @@ public class ChopPanel extends CreateJobPanel {
 
             SplitConfig sc;
             try {
-                sc = splitRow.getSplitConfig();
+                sc = splitRow.getSplitConfig(file.length());
             } catch (NumberFormatException exc) {
                 JOptionPane.showMessageDialog(null, "Invalid value in the Split fields.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;

@@ -4,7 +4,7 @@ import java.io.FilterInputStream;
 import java.io.InputStream;
 
 public class CryptInputStream extends FilterInputStream {
-    protected CryptInputStream(InputStream in) {
+    public CryptInputStream(InputStream in) {
         super(in);
     }
 

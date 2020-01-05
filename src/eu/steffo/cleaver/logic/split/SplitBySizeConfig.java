@@ -1,39 +1,46 @@
 package eu.steffo.cleaver.logic.split;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
-
+/**
+ * A {@link SplitConfig} for splitting a file in parts of a specific part size.
+ */
 public class SplitBySizeConfig extends SplitConfig {
-    private long size;
-
-    public SplitBySizeConfig(long size) {
-        this.size = size;
-    }
+    /**
+     * The size of the parts to split the file in.
+     */
+    private long partSize;
 
     /**
-     * @return The size in bytes the file parts should be.
+     * The total size of the file to split.
      */
-    public long getSize() {
-        return size;
+    private long totalSize;
+
+    /**
+     * Construct a new SplitBySizeConfig.
+     * @param partSize The size of the parts to split the file in.
+     * @param totalSize The total size of the file to split.
+     */
+    public SplitBySizeConfig(long partSize, long totalSize) {
+        this.partSize = partSize;
+        this.totalSize = totalSize;
     }
 
     @Override
     public String toString() {
-        return String.format("%d bytes", this.size);
+        return String.format("%d bytes", this.partSize);
     }
 
     @Override
-    public Element toElement(Document doc) {
-        Element element = doc.createElement("Split");
+    public long getPartSize() {
+        return partSize;
+    }
 
-        Attr attr = doc.createAttribute("mode");
-        attr.setValue("by-size");
-        element.setAttributeNode(attr);
+    @Override
+    public int getPartCount() {
+        return (int)Math.ceil((double) totalSize / (double)partSize);
+    }
 
-        element.setTextContent(Long.toString(size));
-
-        return element;
+    @Override
+    public long getTotalSize() {
+        return totalSize;
     }
 }

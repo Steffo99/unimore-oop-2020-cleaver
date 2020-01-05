@@ -5,10 +5,10 @@ import java.io.InputStream;
 
 public class SplitFileInputStream extends InputStream {
     protected String fileBaseName;
-    protected int partSize;
+    protected long partSize;
     protected int currentFileCount;
 
-    public SplitFileInputStream(String fileBaseName, int partSize) {
+    public SplitFileInputStream(String fileBaseName, long partSize) {
         this.fileBaseName = fileBaseName;
         this.partSize = partSize;
         this.currentFileCount = 0;

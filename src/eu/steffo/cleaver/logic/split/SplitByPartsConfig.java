@@ -1,21 +1,24 @@
 package eu.steffo.cleaver.logic.split;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 public class SplitByPartsConfig extends SplitConfig {
+    /**
+     * The number of parts the file should be split in.
+     */
     private int parts;
 
-    public SplitByPartsConfig(int parts) {
-        this.parts = parts;
-    }
+    /**
+     * The total size of the file to split.
+     */
+    private long totalSize;
 
     /**
-     * @return The number of parts the file should be split in.
+     * Construct a new SplitByPartsConfig.
+     * @param parts The number of parts the file should be split in.
+     * @param totalSize The total size of the file to split.
      */
-    public int getParts() {
-        return parts;
+    public SplitByPartsConfig(int parts, long totalSize) {
+        this.parts = parts;
+        this.totalSize = totalSize;
     }
 
     @Override
@@ -24,15 +27,17 @@ public class SplitByPartsConfig extends SplitConfig {
     }
 
     @Override
-    public Element toElement(Document doc) {
-        Element element = doc.createElement("Split");
+    public long getPartSize() {
+        return (int)Math.ceil((double) totalSize / (double)parts);
+    }
 
-        Attr attr = doc.createAttribute("mode");
-        attr.setValue("by-parts");
-        element.setAttributeNode(attr);
+    @Override
+    public int getPartCount() {
+        return parts;
+    }
 
-        element.setTextContent(Integer.toString(parts));
-
-        return element;
+    @Override
+    public long getTotalSize() {
+        return totalSize;
     }
 }

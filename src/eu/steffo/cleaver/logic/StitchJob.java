@@ -4,11 +4,12 @@ import eu.steffo.cleaver.errors.ChpFileError;
 import eu.steffo.cleaver.errors.ProgrammingError;
 import eu.steffo.cleaver.logic.compress.CompressConfig;
 import eu.steffo.cleaver.logic.crypt.CryptConfig;
+import eu.steffo.cleaver.logic.crypt.CryptInputStream;
 import eu.steffo.cleaver.logic.progress.ErrorProgress;
+import eu.steffo.cleaver.logic.progress.FinishedProgress;
 import eu.steffo.cleaver.logic.progress.Progress;
-import eu.steffo.cleaver.logic.split.SplitByPartsConfig;
-import eu.steffo.cleaver.logic.split.SplitBySizeConfig;
-import eu.steffo.cleaver.logic.split.SplitConfig;
+import eu.steffo.cleaver.logic.progress.WorkingProgress;
+import eu.steffo.cleaver.logic.split.*;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -20,6 +21,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
+import java.util.zip.DeflaterInputStream;
 
 /**
  * A {@link Job} that converts <i>chopped</i> (*.chp + *.cXX) files back into regular files.
@@ -138,13 +140,29 @@ public class StitchJob extends Job {
 
         if(splitNode != null) {
             Element split = (Element)splitNode;
-            String splitMode = split.getAttribute("mode");
-            if(splitMode.equals("by-parts")) {
-                splitConfig = new SplitByPartsConfig(Integer.parseInt(split.getTextContent()));
+
+            long partSize;
+            try {
+                partSize = Long.parseLong(split.getAttribute("part-size"));
+            } catch(NumberFormatException e) {
+                throw new ChpFileError("Corrupt part size data.");
             }
-            else {
-                splitConfig = new SplitBySizeConfig(Integer.parseInt(split.getTextContent()));
+
+            int parts;
+            try {
+                parts = Integer.parseInt(split.getAttribute("parts"));
+            } catch(NumberFormatException e) {
+                throw new ChpFileError("Corrupt parts data.");
             }
+
+            long totalSize;
+            try {
+                totalSize = Long.parseLong(split.getAttribute("total-size"));
+            } catch(NumberFormatException e) {
+                throw new ChpFileError("Corrupt total size data.");
+            }
+
+            splitConfig = new MergeConfig(partSize, parts, totalSize);
         }
         if(cryptNode != null) {
             cryptConfig = new CryptConfig(cryptKey);
@@ -156,6 +174,42 @@ public class StitchJob extends Job {
 
     @Override
     public void run() {
-        this.setProgress(new ErrorProgress(null));
+        try {
+            InputStream inputStream;
+            OutputStream outputStream = new FileOutputStream(resultFile.getAbsolutePath());
+
+            if (splitConfig != null) {
+                inputStream = new SplitFileInputStream(resultFile.getAbsolutePath(), splitConfig.getPartSize());
+            }
+            else {
+                inputStream = new FileInputStream(String.format("%s.c00", resultFile.getAbsolutePath()));
+            }
+
+            if (compressConfig != null) {
+                inputStream = new DeflaterInputStream(inputStream);
+            }
+
+            if (cryptConfig != null) {
+                inputStream = new CryptInputStream(inputStream);
+            }
+
+            //Pipe everything to the output
+            int bytesUntilNextUpdate = 2048;
+            this.setProgress(new WorkingProgress());
+
+            int i;
+            while((i = inputStream.read()) != -1) {
+                outputStream.write(i);
+                bytesUntilNextUpdate -= 1;
+                if(bytesUntilNextUpdate <= 0) {
+                    //TODO: progress logic
+                    bytesUntilNextUpdate = 2048;
+                }
+            }
+
+            this.setProgress(new FinishedProgress());
+        } catch (Throwable e) {
+            this.setProgress(new ErrorProgress(e));
+        }
     }
 }

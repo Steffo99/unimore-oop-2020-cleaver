@@ -17,7 +17,7 @@ public class SplitRow extends OptionRow {
     /**
      * The checkbox enabling or disabling the split step.
      *
-     * If unticked, {@link #getSplitConfig()} will return {@literal null}.
+     * If unticked, {@link #getSplitConfig(long)} will return {@literal null}.
      */
     protected final JCheckBox splitCheckBox;
 
@@ -150,18 +150,19 @@ public class SplitRow extends OptionRow {
 
     /**
      * Create a {@link SplitConfig} from the settings in this {@link OptionRow}.
+     * @param fileSize The size of the file that the {@link SplitConfig} is being generated for.
      * @return The resulting {@link SplitConfig}, or {@literal null} if the {@link #splitCheckBox} is unticked.
      */
-    public SplitConfig getSplitConfig() {
+    public SplitConfig getSplitConfig(long fileSize) throws NumberFormatException {
         if(!splitCheckBox.isSelected()) {
             return null;
         }
         //TODO: catch exception here and display an error
         else if(!sizeTextField.getText().equals("")) {
-            return new SplitBySizeConfig(Integer.parseInt(sizeTextField.getText()));
+            return new SplitBySizeConfig(Integer.parseInt(sizeTextField.getText()), fileSize);
         }
         else if(!partsTextField.getText().equals("")) {
-            return new SplitByPartsConfig(Integer.parseInt(partsTextField.getText()));
+            return new SplitByPartsConfig(Integer.parseInt(partsTextField.getText()), fileSize);
         }
         else return null;
     }
