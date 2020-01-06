@@ -6,6 +6,7 @@ import eu.steffo.cleaver.logic.crypt.CryptConfig;
 import eu.steffo.cleaver.logic.crypt.CryptOutputStream;
 import eu.steffo.cleaver.logic.progress.ErrorProgress;
 import eu.steffo.cleaver.logic.progress.FinishedProgress;
+import eu.steffo.cleaver.logic.progress.Progress;
 import eu.steffo.cleaver.logic.progress.WorkingProgress;
 import eu.steffo.cleaver.logic.split.SplitConfig;
 import eu.steffo.cleaver.logic.split.SplitFileOutputStream;
@@ -32,6 +33,15 @@ public class ChopJob extends Job {
     private final CryptConfig cryptConfig;
     private final CompressConfig compressConfig;
 
+    /**
+     * Create a new ChopJob (with progress updates support).
+     * @param file The file to be chopped.
+     * @param splitConfig The configuration for the split step.
+     * @param cryptConfig The configuration for the crypt step.
+     * @param compressConfig The configuration for the compress step.
+     * @param onProgressChange A {@link Runnable} that should be invoked when {@link #setProgress(Progress)} is called.
+     * @see Job#Job(Runnable)
+     */
     public ChopJob(File file, SplitConfig splitConfig, CryptConfig cryptConfig, CompressConfig compressConfig, Runnable onProgressChange) {
         super(onProgressChange);
         this.file = file;
@@ -40,10 +50,18 @@ public class ChopJob extends Job {
         this.compressConfig = compressConfig;
     }
 
+    /**
+     * Create a new ChopJob (without progress updates support).
+     * @param file The file to be chopped.
+     * @param splitConfig The configuration for the split step.
+     * @param cryptConfig The configuration for the crypt step.
+     * @param compressConfig The configuration for the compress step.
+     * @see ChopJob#ChopJob(File, SplitConfig, CryptConfig, CompressConfig, Runnable)
+     * @see Job#Job()
+     */
     public ChopJob(File file, SplitConfig splitConfig, CryptConfig cryptConfig, CompressConfig compressConfig) {
         this(file, splitConfig, cryptConfig, compressConfig, null);
     }
-
 
     @Override
     public String getType() {
@@ -88,7 +106,7 @@ public class ChopJob extends Job {
             }
 
             if(cryptConfig != null) {
-                outputStream = new CryptOutputStream(outputStream);
+                outputStream = new CryptOutputStream(outputStream, cryptConfig.getKey());
             }
 
             //Create the .chp file
@@ -97,7 +115,7 @@ public class ChopJob extends Job {
             try {
                 builder = factory.newDocumentBuilder();
             } catch (ParserConfigurationException e) {
-                throw new ProgrammingError();
+                throw new ProgrammingError("Parser configuration error in the ChopJob.");
             }
             Document doc = builder.newDocument();
             Element root = doc.createElement("Cleaver");

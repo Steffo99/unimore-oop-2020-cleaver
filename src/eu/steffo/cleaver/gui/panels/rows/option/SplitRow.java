@@ -157,7 +157,6 @@ public class SplitRow extends OptionRow {
         if(!splitCheckBox.isSelected()) {
             return null;
         }
-        //TODO: catch exception here and display an error
         else if(!sizeTextField.getText().equals("")) {
             return new SplitBySizeConfig(Integer.parseInt(sizeTextField.getText()), fileSize);
         }

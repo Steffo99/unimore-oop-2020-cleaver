@@ -22,12 +22,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.util.zip.DeflaterInputStream;
+import java.util.zip.InflaterInputStream;
 
 /**
  * A {@link Job} that converts <i>chopped</i> (*.chp + *.cXX) files back into regular files.
  */
 public class StitchJob extends Job {
     private File resultFile;
+    private File chpFile;
     private SplitConfig splitConfig = null;
     private CryptConfig cryptConfig = null;
     private CompressConfig compressConfig = null;
@@ -66,7 +68,8 @@ public class StitchJob extends Job {
      */
     public StitchJob(File chpFile, String cryptKey, Runnable updateTable) throws ChpFileError, ProgrammingError {
         super(updateTable);
-        parseChp(openChp(chpFile), cryptKey);
+        this.chpFile = chpFile;
+        parseChp(getChpFileDocument(chpFile), cryptKey);
     }
 
     @Override
@@ -94,19 +97,26 @@ public class StitchJob extends Job {
         return compressConfig;
     }
 
-    protected static Document openChp(File file) throws ChpFileError, ProgrammingError {
+    /**
+     * Instantiate a new {@link Document} based on the contents of a *.chp file.
+     * @param file The *.chp {@link File} to create the document from.
+     * @return The created {@link Document}.
+     * @throws ChpFileError If the .chp does not exist, or is corrupt.
+     * @throws ProgrammingError It should never happen, as the parser should be already configured correctly.
+     */
+    protected static Document getChpFileDocument(File file) throws ChpFileError, ProgrammingError {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         try {
             builder = factory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            throw new ProgrammingError();
+            throw new ProgrammingError("Parser configuration error in the ChopJob.");
         }
         Document doc;
         try {
             doc = builder.parse(file);
         } catch (SAXException e) {
-            throw new ProgrammingError();
+            throw new ChpFileError("The .chp is corrupt!");
         } catch (IOException e) {
             throw new ChpFileError("The .chp file does not exist anymore!");
         }
@@ -114,12 +124,12 @@ public class StitchJob extends Job {
     }
 
     /**
-     * Read a {@link Document} and set {@link #splitConfig}, {@link #cryptConfig} and {@link #compressConfig} accordingly.
+     * Read a {@link Document} and set the {@link SplitConfig}, {@link CryptConfig} and {@link CompressConfig} of this job accordingly.
      * @param doc The {@link Document} to be read.
      * @param cryptKey The encryption key to use in the {@link CryptConfig}.
      * @throws ChpFileError If there's an error while parsing the *.chp file.
      */
-    protected final void parseChp(Document doc, String cryptKey) throws ChpFileError {
+    protected void parseChp(Document doc, String cryptKey) throws ChpFileError {
         Element root = doc.getDocumentElement();
 
         NodeList originals = root.getElementsByTagName("Original");
@@ -136,7 +146,8 @@ public class StitchJob extends Job {
             throw new ChpFileError("No original filename found (<Original> tag)");
         }
         Element original = (Element)originalNode;
-        resultFile = new File(original.getTextContent());
+        //The resulting file will be in the same directory of the *.chp file
+        resultFile = new File(chpFile.getAbsoluteFile().getParentFile().getAbsolutePath().concat("/" + original.getTextContent()));
 
         if(splitNode != null) {
             Element split = (Element)splitNode;
@@ -176,17 +187,17 @@ public class StitchJob extends Job {
     public void run() {
         try {
             InputStream inputStream;
-            OutputStream outputStream = new FileOutputStream(resultFile.getAbsolutePath());
+            OutputStream outputStream = new FileOutputStream(resultFile);
 
             if (splitConfig != null) {
-                inputStream = new SplitFileInputStream(resultFile.getAbsolutePath(), splitConfig.getPartSize());
+                inputStream = new SplitFileInputStream(resultFile.getPath(), splitConfig.getPartSize());
             }
             else {
                 inputStream = new FileInputStream(String.format("%s.c00", resultFile.getAbsolutePath()));
             }
 
             if (compressConfig != null) {
-                inputStream = new DeflaterInputStream(inputStream);
+                inputStream = new InflaterInputStream(inputStream);
             }
 
             if (cryptConfig != null) {
@@ -202,7 +213,7 @@ public class StitchJob extends Job {
                 outputStream.write(i);
                 bytesUntilNextUpdate -= 1;
                 if(bytesUntilNextUpdate <= 0) {
-                    //TODO: progress logic
+                    this.setProgress(new WorkingProgress((float)(resultFile.length() - inputStream.available()) / (float)resultFile.length()));
                     bytesUntilNextUpdate = 2048;
                 }
             }

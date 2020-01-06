@@ -27,7 +27,7 @@ public abstract class Job extends Thread {
     /**
      * Construct a Job, then add to it a {@link Runnable} that will be invoked through {@link SwingUtilities#invokeLater(Runnable) invokeLater} on progress
      * changes.
-     * @param onProgressChange The {@link Runnable} that should be invoked when {@link #setProgress(Progress)} is called.
+     * @param onProgressChange A {@link Runnable} that should be invoked when {@link #setProgress(Progress)} is called.
      * @see Job()
      */
     public Job(Runnable onProgressChange) {
@@ -40,6 +40,8 @@ public abstract class Job extends Thread {
 
     /**
      * @return The name of the job type, such as "Chop" for a {@link ChopJob}.
+     *
+     * It will be displayed in the {@link eu.steffo.cleaver.gui.panels.JobsTablePanel}.
      */
     public abstract String getType();
 

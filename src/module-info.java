@@ -1,5 +1,7 @@
 /**
  * A file compression, encryption and splitting utility in Java.
+ *
+ * It includes a easy to use {@link javax.swing} GUI.
  */
 open module eu.steffo.cleaver {
     requires java.desktop;

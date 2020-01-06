@@ -21,7 +21,8 @@ public class SplitFileOutputStream extends OutputStream {
     protected FileOutputStream currentFileOutputStream;
 
     /**
-     * @param fileBaseName The name that the files without the extension. If it is {@literal example}, the created files will be {@literal example.c1}, {@literal example.c2}, and so on.
+     * Construct a SplitFileOutputStream.
+     * @param fileBaseName The name of the files without the extension. If it is {@literal example}, the created files will be {@literal example.c1}, {@literal example.c2}, and so on.
      * @param maximumByteCount The number of bytes that should be written to a file before switching to the next one.
      */
     public SplitFileOutputStream(String fileBaseName, long maximumByteCount) {
@@ -61,7 +62,7 @@ public class SplitFileOutputStream extends OutputStream {
     }
 
     /**
-     * @return The name that the files without the extension. If it is {@literal example}, the created files will be {@literal example.c1}, {@literal example.c2}, and so on.
+     * @return The name of the files without the extension. If it is {@literal example}, the created files will be {@literal example.c1}, {@literal example.c2}, and so on.
      */
     public String getFileBaseName() {
         return fileBaseName;
