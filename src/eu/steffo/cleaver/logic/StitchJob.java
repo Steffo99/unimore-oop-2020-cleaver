@@ -193,7 +193,7 @@ public class StitchJob extends Job {
                 inputStream = new SplitFileInputStream(resultFile.getPath(), splitConfig.getPartSize());
             }
             else {
-                inputStream = new FileInputStream(String.format("%s.c00", resultFile.getAbsolutePath()));
+                inputStream = new FileInputStream(String.format("%s.c0", resultFile.getAbsolutePath()));
             }
 
             if (compressConfig != null) {
@@ -201,7 +201,7 @@ public class StitchJob extends Job {
             }
 
             if (cryptConfig != null) {
-                inputStream = new CryptInputStream(inputStream);
+                inputStream = new CryptInputStream(inputStream, cryptConfig.getKey());
             }
 
             //Pipe everything to the output
@@ -220,6 +220,7 @@ public class StitchJob extends Job {
 
             this.setProgress(new FinishedProgress());
         } catch (Throwable e) {
+            e.printStackTrace();
             this.setProgress(new ErrorProgress(e));
         }
     }

@@ -98,7 +98,7 @@ public class ChopJob extends Job {
                 outputStream = new SplitFileOutputStream(file.getAbsolutePath(), splitConfig.getPartSize());
             }
             else {
-                outputStream = new FileOutputStream(String.format("%s.c00", file.getAbsolutePath()));
+                outputStream = new FileOutputStream(String.format("%s.c0", file.getAbsolutePath()));
             }
 
             if(compressConfig != null) {
@@ -160,6 +160,7 @@ public class ChopJob extends Job {
 
             this.setProgress(new FinishedProgress());
         } catch (Throwable e) {
+            e.printStackTrace();
             this.setProgress(new ErrorProgress(e));
         }
     }

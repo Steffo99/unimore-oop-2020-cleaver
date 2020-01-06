@@ -109,7 +109,7 @@ public class CleaverFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 for(Job job : jobs) {
-                    if(job.getProgress() instanceof NotStartedProgress)
+                    if(job.getState() == Thread.State.NEW)
                     {
                         job.start();
                     }
