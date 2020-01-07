@@ -1,6 +1,6 @@
 package eu.steffo.cleaver.gui.panels.rows.option;
 
-import eu.steffo.cleaver.logic.crypt.CryptConfig;
+import eu.steffo.cleaver.logic.config.CryptConfig;
 
 import javax.swing.*;
 

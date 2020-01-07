@@ -1,6 +1,7 @@
 package eu.steffo.cleaver.gui.panels;
 
-import eu.steffo.cleaver.logic.Job;
+import eu.steffo.cleaver.logic.job.Job;
+import eu.steffo.cleaver.logic.job.ChopJob;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -48,7 +49,7 @@ public class ChopAndStitchPanel extends JPanel {
      * @param jobs The {@link ArrayList} of jobs that should be manipulated.
      * @param onProgressChange The function that should be invoked when the {@link Job} {@link eu.steffo.cleaver.logic.progress.Progress Progress} changes.
      * @see ChopPanel#createAndAddJobs(ArrayList, Runnable)
-     * @see eu.steffo.cleaver.logic.ChopJob
+     * @see ChopJob
      * @see eu.steffo.cleaver.gui.CleaverFrame
      */
     public void createAndAddChopJobs(ArrayList<Job> jobs, Runnable onProgressChange) {
@@ -60,7 +61,7 @@ public class ChopAndStitchPanel extends JPanel {
      * @param jobs The {@link ArrayList} of jobs that should be manipulated.
      * @param onProgressChange The function that should be invoked when the {@link Job} {@link eu.steffo.cleaver.logic.progress.Progress Progress} changes.
      * @see StitchPanel#createAndAddJobs(ArrayList, Runnable)
-     * @see eu.steffo.cleaver.logic.ChopJob
+     * @see ChopJob
      * @see eu.steffo.cleaver.gui.CleaverFrame
      */
     public void createAndAddStitchJobs(ArrayList<Job> jobs, Runnable onProgressChange) {

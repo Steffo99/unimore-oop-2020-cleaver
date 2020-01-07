@@ -1,4 +1,4 @@
-package eu.steffo.cleaver.logic.split;
+package eu.steffo.cleaver.logic.config;
 
 public class SplitByPartsConfig extends SplitConfig {
     /**

@@ -1,7 +1,9 @@
 package eu.steffo.cleaver.logic.progress;
 
+import eu.steffo.cleaver.logic.job.Job;
+
 /**
- * A {@link Progress} that specifies that a {@link eu.steffo.cleaver.logic.Job} stopped because an exception occoured.
+ * A {@link Progress} that specifies that a {@link Job} stopped because an exception occoured.
  */
 public class ErrorProgress extends Progress {
     private final Throwable error;
@@ -15,7 +17,7 @@ public class ErrorProgress extends Progress {
     }
 
     /**
-     * @return The error encountered by the {@link eu.steffo.cleaver.logic.Job}.
+     * @return The error encountered by the {@link Job}.
      */
     public Throwable getError() {
         return error;

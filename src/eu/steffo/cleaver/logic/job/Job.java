@@ -1,13 +1,13 @@
-package eu.steffo.cleaver.logic;
+package eu.steffo.cleaver.logic.job;
 
 import java.io.File;
 import javax.swing.SwingUtilities;
 
-import eu.steffo.cleaver.logic.compress.CompressConfig;
-import eu.steffo.cleaver.logic.crypt.CryptConfig;
+import eu.steffo.cleaver.logic.config.CompressConfig;
+import eu.steffo.cleaver.logic.config.CryptConfig;
 import eu.steffo.cleaver.logic.progress.NotStartedProgress;
 import eu.steffo.cleaver.logic.progress.Progress;
-import eu.steffo.cleaver.logic.split.SplitConfig;
+import eu.steffo.cleaver.logic.config.SplitConfig;
 
 /**
  * A {@link Thread} that allows access to the basic .

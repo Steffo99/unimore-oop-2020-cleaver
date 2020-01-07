@@ -1,7 +1,9 @@
 package eu.steffo.cleaver.logic.progress;
 
+import eu.steffo.cleaver.logic.job.Job;
+
 /**
- * A {@link Progress} that specifies that a {@link eu.steffo.cleaver.logic.Job} is currently running and has progressed to {@link #progress} %.
+ * A {@link Progress} that specifies that a {@link Job} is currently running and has progressed to {@link #progress} %.
  */
 public class WorkingProgress extends Progress {
     public final float progress;

@@ -1,8 +1,8 @@
 package eu.steffo.cleaver.gui.panels.rows.option;
 
-import eu.steffo.cleaver.logic.split.SplitByPartsConfig;
-import eu.steffo.cleaver.logic.split.SplitBySizeConfig;
-import eu.steffo.cleaver.logic.split.SplitConfig;
+import eu.steffo.cleaver.logic.config.SplitByPartsConfig;
+import eu.steffo.cleaver.logic.config.SplitBySizeConfig;
+import eu.steffo.cleaver.logic.config.SplitConfig;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;

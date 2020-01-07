@@ -1,9 +1,11 @@
 package eu.steffo.cleaver.gui.panels.rows.option;
 
+import eu.steffo.cleaver.logic.config.CryptConfig;
+
 import javax.swing.*;
 
 /**
- * A {@link OptionRow} allowing the {@link eu.steffo.cleaver.logic.crypt.CryptConfig configuration of the crypt step} of the file stitch process.
+ * A {@link OptionRow} allowing the {@link CryptConfig configuration of the crypt step} of the file stitch process.
  *
  * This configuration is used only if the selected *.chp file specifies that the *.cXX are encrypted.
  *

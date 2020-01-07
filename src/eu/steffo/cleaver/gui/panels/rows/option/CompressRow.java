@@ -1,6 +1,6 @@
 package eu.steffo.cleaver.gui.panels.rows.option;
 
-import eu.steffo.cleaver.logic.compress.CompressConfig;
+import eu.steffo.cleaver.logic.config.CompressConfig;
 
 import javax.swing.*;
 

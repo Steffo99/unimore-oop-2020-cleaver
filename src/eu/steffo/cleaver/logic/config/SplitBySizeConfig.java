@@ -1,4 +1,4 @@
-package eu.steffo.cleaver.logic.split;
+package eu.steffo.cleaver.logic.config;
 
 /**
  * A {@link SplitConfig} for splitting a file in parts of a specific part size.

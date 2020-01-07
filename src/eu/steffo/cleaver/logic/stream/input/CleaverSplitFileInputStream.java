@@ -1,10 +1,10 @@
-package eu.steffo.cleaver.logic.split;
+package eu.steffo.cleaver.logic.stream.input;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class SplitFileInputStream extends InputStream {
+public class CleaverSplitFileInputStream extends InputStream {
     private final String fileBaseName;
     private long currentByteCount;
     private long maximumByteCount;
@@ -20,7 +20,7 @@ public class SplitFileInputStream extends InputStream {
      * @param fileBaseName The name of the files without the extension. If it is {@literal example}, the opened files will be {@literal example.c1}, {@literal example.c2}, and so on.
      * @param maximumByteCount The number of bytes that should be read from a file before switching to the next one.
      */
-    public SplitFileInputStream(String fileBaseName, long maximumByteCount) {
+    public CleaverSplitFileInputStream(String fileBaseName, long maximumByteCount) {
         this.fileBaseName = fileBaseName;
         this.maximumByteCount = maximumByteCount;
         this.currentByteCount = 0;

@@ -1,4 +1,4 @@
-package eu.steffo.cleaver.logic.split;
+package eu.steffo.cleaver.logic.config;
 
 /**
  * A {@link SplitConfig} created by reading a *.chp file, containing the number of parts and their size, but not the resulting file size.

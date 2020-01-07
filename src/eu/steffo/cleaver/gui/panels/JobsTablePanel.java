@@ -1,9 +1,9 @@
 package eu.steffo.cleaver.gui.panels;
 
-import eu.steffo.cleaver.logic.Job;
-import eu.steffo.cleaver.logic.compress.CompressConfig;
-import eu.steffo.cleaver.logic.crypt.CryptConfig;
-import eu.steffo.cleaver.logic.split.SplitConfig;
+import eu.steffo.cleaver.logic.job.Job;
+import eu.steffo.cleaver.logic.config.CompressConfig;
+import eu.steffo.cleaver.logic.config.CryptConfig;
+import eu.steffo.cleaver.logic.config.SplitConfig;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;

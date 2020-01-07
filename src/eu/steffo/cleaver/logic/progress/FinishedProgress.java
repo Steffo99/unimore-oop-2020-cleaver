@@ -1,7 +1,9 @@
 package eu.steffo.cleaver.logic.progress;
 
+import eu.steffo.cleaver.logic.job.Job;
+
 /**
- * A {@link Progress} that specifies that a {@link eu.steffo.cleaver.logic.Job} has finished.
+ * A {@link Progress} that specifies that a {@link Job} has finished.
  */
 public class FinishedProgress extends Progress {
     @Override

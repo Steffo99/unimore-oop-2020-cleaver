@@ -1,15 +1,15 @@
-package eu.steffo.cleaver.logic;
+package eu.steffo.cleaver.logic.job;
 
 import eu.steffo.cleaver.errors.ProgrammingError;
-import eu.steffo.cleaver.logic.compress.CompressConfig;
-import eu.steffo.cleaver.logic.crypt.CryptConfig;
-import eu.steffo.cleaver.logic.crypt.CryptOutputStream;
+import eu.steffo.cleaver.logic.config.CompressConfig;
+import eu.steffo.cleaver.logic.config.CryptConfig;
+import eu.steffo.cleaver.logic.stream.output.CleaverCryptOutputStream;
 import eu.steffo.cleaver.logic.progress.ErrorProgress;
 import eu.steffo.cleaver.logic.progress.FinishedProgress;
 import eu.steffo.cleaver.logic.progress.Progress;
 import eu.steffo.cleaver.logic.progress.WorkingProgress;
-import eu.steffo.cleaver.logic.split.SplitConfig;
-import eu.steffo.cleaver.logic.split.SplitFileOutputStream;
+import eu.steffo.cleaver.logic.config.SplitConfig;
+import eu.steffo.cleaver.logic.stream.output.CleaverSplitFileOutputStream;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -95,7 +95,7 @@ public class ChopJob extends Job {
             OutputStream outputStream;
 
             if(splitConfig != null) {
-                outputStream = new SplitFileOutputStream(file.getAbsolutePath(), splitConfig.getPartSize());
+                outputStream = new CleaverSplitFileOutputStream(file.getAbsolutePath(), splitConfig.getPartSize());
             }
             else {
                 outputStream = new FileOutputStream(String.format("%s.c0", file.getAbsolutePath()));
@@ -106,7 +106,7 @@ public class ChopJob extends Job {
             }
 
             if(cryptConfig != null) {
-                outputStream = new CryptOutputStream(outputStream, cryptConfig.getKey());
+                outputStream = new CleaverCryptOutputStream(outputStream, cryptConfig.getKey());
             }
 
             //Create the .chp file

@@ -4,8 +4,8 @@ import eu.steffo.cleaver.errors.ChpFileError;
 import eu.steffo.cleaver.errors.ProgrammingError;
 import eu.steffo.cleaver.gui.panels.rows.CreateJobButtonRow;
 import eu.steffo.cleaver.gui.panels.rows.option.KeyRow;
-import eu.steffo.cleaver.logic.Job;
-import eu.steffo.cleaver.logic.StitchJob;
+import eu.steffo.cleaver.logic.job.Job;
+import eu.steffo.cleaver.logic.job.StitchJob;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;

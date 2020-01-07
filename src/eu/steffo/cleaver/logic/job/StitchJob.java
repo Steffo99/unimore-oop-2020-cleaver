@@ -1,16 +1,18 @@
-package eu.steffo.cleaver.logic;
+package eu.steffo.cleaver.logic.job;
 
 import eu.steffo.cleaver.errors.ChpFileError;
 import eu.steffo.cleaver.errors.ProgrammingError;
-import eu.steffo.cleaver.logic.compress.CompressConfig;
-import eu.steffo.cleaver.logic.crypt.CryptConfig;
-import eu.steffo.cleaver.logic.crypt.CryptInputStream;
+import eu.steffo.cleaver.logic.config.CompressConfig;
+import eu.steffo.cleaver.logic.config.CryptConfig;
+import eu.steffo.cleaver.logic.config.MergeConfig;
+import eu.steffo.cleaver.logic.config.SplitConfig;
+import eu.steffo.cleaver.logic.stream.input.CryptInputStream;
 import eu.steffo.cleaver.logic.progress.ErrorProgress;
 import eu.steffo.cleaver.logic.progress.FinishedProgress;
 import eu.steffo.cleaver.logic.progress.Progress;
 import eu.steffo.cleaver.logic.progress.WorkingProgress;
-import eu.steffo.cleaver.logic.split.*;
 
+import eu.steffo.cleaver.logic.stream.input.CleaverSplitFileInputStream;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -21,7 +23,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
-import java.util.zip.DeflaterInputStream;
 import java.util.zip.InflaterInputStream;
 
 /**
@@ -190,7 +191,7 @@ public class StitchJob extends Job {
             OutputStream outputStream = new FileOutputStream(resultFile);
 
             if (splitConfig != null) {
-                inputStream = new SplitFileInputStream(resultFile.getPath(), splitConfig.getPartSize());
+                inputStream = new CleaverSplitFileInputStream(resultFile.getPath(), splitConfig.getPartSize());
             }
             else {
                 inputStream = new FileInputStream(String.format("%s.c0", resultFile.getAbsolutePath()));

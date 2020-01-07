@@ -3,8 +3,7 @@ package eu.steffo.cleaver.gui;
 import eu.steffo.cleaver.gui.panels.ChopAndStitchPanel;
 import eu.steffo.cleaver.gui.panels.JobsButtonsPanel;
 import eu.steffo.cleaver.gui.panels.JobsTablePanel;
-import eu.steffo.cleaver.logic.Job;
-import eu.steffo.cleaver.logic.progress.NotStartedProgress;
+import eu.steffo.cleaver.logic.job.Job;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

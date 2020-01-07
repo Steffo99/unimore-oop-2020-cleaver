@@ -4,11 +4,11 @@ import eu.steffo.cleaver.gui.panels.rows.CreateJobButtonRow;
 import eu.steffo.cleaver.gui.panels.rows.option.CompressRow;
 import eu.steffo.cleaver.gui.panels.rows.option.CryptRow;
 import eu.steffo.cleaver.gui.panels.rows.option.SplitRow;
-import eu.steffo.cleaver.logic.ChopJob;
-import eu.steffo.cleaver.logic.Job;
-import eu.steffo.cleaver.logic.compress.CompressConfig;
-import eu.steffo.cleaver.logic.crypt.CryptConfig;
-import eu.steffo.cleaver.logic.split.SplitConfig;
+import eu.steffo.cleaver.logic.job.ChopJob;
+import eu.steffo.cleaver.logic.job.Job;
+import eu.steffo.cleaver.logic.config.CompressConfig;
+import eu.steffo.cleaver.logic.config.CryptConfig;
+import eu.steffo.cleaver.logic.config.SplitConfig;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;

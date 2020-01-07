@@ -1,4 +1,4 @@
-package eu.steffo.cleaver.logic.crypt;
+package eu.steffo.cleaver.logic.stream.input;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;

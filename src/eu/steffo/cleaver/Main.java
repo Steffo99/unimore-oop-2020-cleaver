@@ -2,7 +2,7 @@ package eu.steffo.cleaver;
 
 import javax.swing.*;
 import eu.steffo.cleaver.gui.CleaverFrame;
-import eu.steffo.cleaver.logic.Job;
+import eu.steffo.cleaver.logic.job.Job;
 
 import java.util.ArrayList;
 
