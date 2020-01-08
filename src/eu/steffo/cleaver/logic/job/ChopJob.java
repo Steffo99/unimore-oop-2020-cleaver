@@ -18,8 +18,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * A {@link Job} that converts regular files into <i>chopped</i> (*.chp + *.cXX) files.
@@ -103,7 +101,7 @@ public class ChopJob extends Job {
             }
 
             if(compressConfig instanceof DeflateConfig) {
-                outputStream = new CleaverDeflaterOutputStream(outputStream);
+                outputStream = new CleaverDeflateOutputStream(outputStream);
             }
 
             if(cryptConfig instanceof PasswordConfig) {

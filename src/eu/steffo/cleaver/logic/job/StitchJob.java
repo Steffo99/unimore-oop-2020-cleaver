@@ -3,7 +3,7 @@ package eu.steffo.cleaver.logic.job;
 import eu.steffo.cleaver.errors.ChpFileError;
 import eu.steffo.cleaver.errors.ProgrammingError;
 import eu.steffo.cleaver.logic.config.*;
-import eu.steffo.cleaver.logic.stream.input.CryptInputStream;
+import eu.steffo.cleaver.logic.stream.input.*;
 import eu.steffo.cleaver.logic.progress.ErrorProgress;
 import eu.steffo.cleaver.logic.progress.FinishedProgress;
 import eu.steffo.cleaver.logic.progress.Progress;
@@ -123,13 +123,36 @@ public class StitchJob extends Job {
     }
 
     /**
-     * Read a {@link Document} and set the {@link IConfig}, {@link PasswordConfig} and {@link DeflateConfig} of this job accordingly.
-     * @param doc The {@link Document} to be read.
-     * @param cryptKey The encryption key to use in the {@link PasswordConfig}.
-     * @throws ChpFileError If there's an error while parsing the *.chp file.
+     * Read a {@link Element} and create a {@link ICleaverInputStream} based on it.
+     * @param element The {@link Element} to be read.
+     * @param cryptKey The encryption key to use in case a {@link CleaverCryptInputStream} is created.
+     * @throws ChpFileError If there's an error while parsing the node.
      */
-    protected void parseChp(Document doc, String cryptKey) throws ChpFileError {
-        //TODO
+    protected ICleaverInputStream parseNode(Element element, String cryptKey) throws ChpFileError {
+        String name = element.getTagName();
+
+        ICleaverInputStream result;
+
+        if(name.equals("Crypt")) {
+            //TODO
+        }
+        else if(name.equals("Deflate")) {
+            //TODO
+        }
+        else if(name.equals("Fork")) {
+            //TODO
+        }
+        else if(name.equals("Simple")) {
+            //TODO
+        }
+        else if(name.equals("Split")) {
+            //TODO
+        }
+        else {
+            throw new ChpFileError("Unknown tag: " + name);
+        }
+
+        return result;
     }
 
     @Override

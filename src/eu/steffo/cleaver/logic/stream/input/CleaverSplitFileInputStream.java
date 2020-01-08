@@ -4,7 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class CleaverSplitFileInputStream extends InputStream {
+public class CleaverSplitFileInputStream extends InputStream implements ICleaverInputStream {
     private final String fileBaseName;
     private long currentByteCount;
     private long maximumByteCount;
