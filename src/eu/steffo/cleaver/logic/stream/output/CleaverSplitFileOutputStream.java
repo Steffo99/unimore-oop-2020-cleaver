@@ -17,7 +17,6 @@ public class CleaverSplitFileOutputStream extends OutputStream implements ICleav
     private final String fileBaseName;
     private long currentByteCount;
     private long maximumByteCount;
-    private long totalByteCount;
     private int currentFileCount;
 
     /**
@@ -60,7 +59,6 @@ public class CleaverSplitFileOutputStream extends OutputStream implements ICleav
         }
         currentFileOutputStream.write(b);
         currentByteCount += 1;
-        totalByteCount += 1;
     }
 
     @Override
@@ -96,13 +94,6 @@ public class CleaverSplitFileOutputStream extends OutputStream implements ICleav
         return currentFileCount;
     }
 
-    /**
-     * @return The number of bytes that have already been written.
-     */
-    public long getTotalByteCount() {
-        return totalByteCount;
-    }
-
     @Override
     public Element toElement(Document doc) {
         Element element = doc.createElement("Split");
@@ -115,10 +106,6 @@ public class CleaverSplitFileOutputStream extends OutputStream implements ICleav
         Attr partCountAttr = doc.createAttribute("parts");
         partCountAttr.setValue(Long.toString(currentFileCount));
         element.setAttributeNode(partCountAttr);
-
-        Attr totalSizeAttr = doc.createAttribute("total-size");
-        totalSizeAttr.setValue(Long.toString(totalByteCount));
-        element.setAttributeNode(totalSizeAttr);
 
         return element;
     }

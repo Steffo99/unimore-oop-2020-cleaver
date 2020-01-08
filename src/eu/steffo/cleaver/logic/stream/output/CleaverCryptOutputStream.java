@@ -78,7 +78,7 @@ public class CleaverCryptOutputStream extends FilterOutputStream implements ICle
 
     /**
      * Generate a new <a href="https://en.wikipedia.org/wiki/Initialization_vector">Initialization Vector</a> with the specified size.
-     * @param size The size of the initialization vector.
+     * @param size The size in bytes of the initialization vector.
      * @return The generated IV.
      */
     protected IvParameterSpec generateIV(int size) {
@@ -103,15 +103,18 @@ public class CleaverCryptOutputStream extends FilterOutputStream implements ICle
      * @throws NoSuchAlgorithmException If the {@link #ENCRYPTION_ALGORITHM} is invalid.
      * @throws InvalidKeySpecException If the generated {@link KeySpec} is invalid.
      */
-    private void createCipher(char[] key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidAlgorithmParameterException, InvalidKeyException {
+    private void initCipher(char[] key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidAlgorithmParameterException, InvalidKeyException {
         //Setup the cipher object
         cipher = Cipher.getInstance(getTransformationString());
 
         //"Convert" the secret key to a AES secret key
         SecretKey aes = new SecretKeySpec(generatePasswordKey(key).getEncoded(), ENCRYPTION_ALGORITHM);
 
+        //Generate the initialization vector
+        IvParameterSpec iv = generateIV(1);
+
         //Init the cipher instance
-        cipher.init(Cipher.ENCRYPT_MODE, aes, generateIV(1));
+        cipher.init(Cipher.ENCRYPT_MODE, aes, iv);
     }
 
     /**
@@ -123,8 +126,9 @@ public class CleaverCryptOutputStream extends FilterOutputStream implements ICle
     public CleaverCryptOutputStream(OutputStream out, String key) {
         super(out);
         try {
-            createCipher(key.toCharArray());
+            initCipher(key.toCharArray());
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeySpecException | InvalidAlgorithmParameterException | InvalidKeyException e) {
+            //This should never happen...
             e.printStackTrace();
         }
     }
@@ -168,6 +172,10 @@ public class CleaverCryptOutputStream extends FilterOutputStream implements ICle
         Attr keyLengthAttr = doc.createAttribute("key-length");
         keyLengthAttr.setValue(Integer.toString(KEY_LENGTH));
         element.setAttributeNode(keyLengthAttr);
+
+        Attr ivAttr = doc.createAttribute("iv");
+        ivAttr.setValue(Byte.toString(cipher.getIV()[0]));
+        element.setAttributeNode(ivAttr);
 
         return element;
     }

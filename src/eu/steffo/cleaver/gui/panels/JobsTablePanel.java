@@ -1,9 +1,7 @@
 package eu.steffo.cleaver.gui.panels;
 
+import eu.steffo.cleaver.logic.config.*;
 import eu.steffo.cleaver.logic.job.Job;
-import eu.steffo.cleaver.logic.config.CompressConfig;
-import eu.steffo.cleaver.logic.config.CryptConfig;
-import eu.steffo.cleaver.logic.config.SplitConfig;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -82,15 +80,15 @@ public class JobsTablePanel extends JPanel {
                 case 1:
                     return job.getFile().getAbsolutePath();
                 case 2:
-                    SplitConfig s = job.getSplitConfig();
+                    ISplitConfig s = job.getSplitConfig();
                     if(s == null) return "";
                     return s.toString();
                 case 3:
-                    CryptConfig k = job.getCryptConfig();
+                    ICryptConfig k = job.getCryptConfig();
                     if(k == null) return "";
                     return k.toString();
                 case 4:
-                    CompressConfig c = job.getCompressConfig();
+                    ICompressConfig c = job.getCompressConfig();
                     if(c == null) return "";
                     return c.toString();
                 case 5:

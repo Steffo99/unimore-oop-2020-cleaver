@@ -1,15 +1,12 @@
 package eu.steffo.cleaver.logic.job;
 
 import eu.steffo.cleaver.errors.ProgrammingError;
-import eu.steffo.cleaver.logic.config.CompressConfig;
-import eu.steffo.cleaver.logic.config.CryptConfig;
-import eu.steffo.cleaver.logic.stream.output.CleaverCryptOutputStream;
+import eu.steffo.cleaver.logic.config.*;
+import eu.steffo.cleaver.logic.stream.output.*;
 import eu.steffo.cleaver.logic.progress.ErrorProgress;
 import eu.steffo.cleaver.logic.progress.FinishedProgress;
 import eu.steffo.cleaver.logic.progress.Progress;
 import eu.steffo.cleaver.logic.progress.WorkingProgress;
-import eu.steffo.cleaver.logic.config.SplitConfig;
-import eu.steffo.cleaver.logic.stream.output.CleaverSplitFileOutputStream;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -21,7 +18,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
-import java.util.zip.DeflaterOutputStream;
 
 /**
  * A {@link Job} that converts regular files into <i>chopped</i> (*.chp + *.cXX) files.
@@ -29,20 +25,20 @@ import java.util.zip.DeflaterOutputStream;
 public class ChopJob extends Job {
 
     private final File file;
-    private final SplitConfig splitConfig;
-    private final CryptConfig cryptConfig;
-    private final CompressConfig compressConfig;
+    private final ISplitConfig splitConfig;
+    private final ICryptConfig cryptConfig;
+    private final ICompressConfig compressConfig;
 
     /**
      * Create a new ChopJob (with progress updates support).
      * @param file The file to be chopped.
-     * @param splitConfig The configuration for the split step.
-     * @param cryptConfig The configuration for the crypt step.
-     * @param compressConfig The configuration for the compress step.
+     * @param splitConfig The configuration for the Split step.
+     * @param cryptConfig The configuration for the Crypt step.
+     * @param compressConfig The configuration for the Compress step.
      * @param onProgressChange A {@link Runnable} that should be invoked when {@link #setProgress(Progress)} is called.
      * @see Job#Job(Runnable)
      */
-    public ChopJob(File file, SplitConfig splitConfig, CryptConfig cryptConfig, CompressConfig compressConfig, Runnable onProgressChange) {
+    public ChopJob(File file, ISplitConfig splitConfig, ICryptConfig cryptConfig, ICompressConfig compressConfig, Runnable onProgressChange) {
         super(onProgressChange);
         this.file = file;
         this.splitConfig = splitConfig;
@@ -53,13 +49,13 @@ public class ChopJob extends Job {
     /**
      * Create a new ChopJob (without progress updates support).
      * @param file The file to be chopped.
-     * @param splitConfig The configuration for the split step.
-     * @param cryptConfig The configuration for the crypt step.
-     * @param compressConfig The configuration for the compress step.
-     * @see ChopJob#ChopJob(File, SplitConfig, CryptConfig, CompressConfig, Runnable)
+     * @param splitConfig The configuration for the Split step.
+     * @param cryptConfig The configuration for the Crypt step.
+     * @param compressConfig The configuration for the Compress step.
+     * @see ChopJob#ChopJob(File, ISplitConfig, ICryptConfig, ICompressConfig, Runnable)
      * @see Job#Job()
      */
-    public ChopJob(File file, SplitConfig splitConfig, CryptConfig cryptConfig, CompressConfig compressConfig) {
+    public ChopJob(File file, ISplitConfig splitConfig, ICryptConfig cryptConfig, ICompressConfig compressConfig) {
         this(file, splitConfig, cryptConfig, compressConfig, null);
     }
 
@@ -74,17 +70,17 @@ public class ChopJob extends Job {
     }
 
     @Override
-    public SplitConfig getSplitConfig() {
+    public ISplitConfig getSplitConfig() {
         return splitConfig;
     }
 
     @Override
-    public CryptConfig getCryptConfig() {
+    public ICryptConfig getCryptConfig() {
         return cryptConfig;
     }
 
     @Override
-    public CompressConfig getCompressConfig() {
+    public ICompressConfig getCompressConfig() {
         return compressConfig;
     }
 
@@ -94,19 +90,22 @@ public class ChopJob extends Job {
             InputStream inputStream = new FileInputStream(file);
             OutputStream outputStream;
 
-            if(splitConfig != null) {
-                outputStream = new CleaverSplitFileOutputStream(file.getAbsolutePath(), splitConfig.getPartSize());
+            if(splitConfig instanceof SizeConfig) {
+                outputStream = new CleaverSplitFileOutputStream(file.getAbsolutePath(), ((SizeConfig)splitConfig).getPartSize());
+            }
+            else if(splitConfig instanceof PartsConfig) {
+                outputStream = new CleaverForkFileOutputStream(file.getAbsolutePath(), ((PartsConfig)splitConfig).getPartCount());
             }
             else {
-                outputStream = new FileOutputStream(String.format("%s.c0", file.getAbsolutePath()));
+                outputStream = new CleaverSimpleFileOutputStream(file.getAbsolutePath());
             }
 
-            if(compressConfig != null) {
-                outputStream = new DeflaterOutputStream(outputStream);
+            if(compressConfig instanceof DeflateConfig) {
+                outputStream = new CleaverDeflaterOutputStream(outputStream);
             }
 
-            if(cryptConfig != null) {
-                outputStream = new CleaverCryptOutputStream(outputStream, cryptConfig.getKey());
+            if(cryptConfig instanceof PasswordConfig) {
+                outputStream = new CleaverCryptOutputStream(outputStream, ((PasswordConfig)cryptConfig).getKey());
             }
 
             //Create the .chp file
@@ -120,26 +119,6 @@ public class ChopJob extends Job {
             Document doc = builder.newDocument();
             Element root = doc.createElement("Cleaver");
             doc.appendChild(root);
-
-            Element original = doc.createElement("Original");
-            original.setTextContent(file.getName());
-            root.appendChild(original);
-
-            if(splitConfig != null) {
-                root.appendChild(splitConfig.toElement(doc));
-            }
-            if(compressConfig != null) {
-                root.appendChild(compressConfig.toElement(doc));
-            }
-            if(cryptConfig != null) {
-                root.appendChild(cryptConfig.toElement(doc));
-            }
-
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(String.format("%s.chp", file.getAbsolutePath()));
-            transformer.transform(source, result);
 
             //Pipe everything to the output
             int bytesUntilNextUpdate = 2048;
@@ -157,6 +136,14 @@ public class ChopJob extends Job {
 
             inputStream.close();
             outputStream.close();
+
+            root.appendChild(((ICleaverOutputStream)outputStream).toElement(doc));
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(String.format("%s.chp", file.getAbsolutePath()));
+            transformer.transform(source, result);
 
             this.setProgress(new FinishedProgress());
         } catch (Throwable e) {

@@ -1,11 +1,12 @@
 package eu.steffo.cleaver.gui.panels.rows.option;
 
-import eu.steffo.cleaver.logic.config.CryptConfig;
+import eu.steffo.cleaver.logic.config.PasswordConfig;
+import eu.steffo.cleaver.logic.config.ICryptConfig;
 
 import javax.swing.*;
 
 /**
- * A {@link OptionRow} allowing the {@link CryptConfig configuration of the crypt step} of the file chop process.
+ * A {@link OptionRow} allowing the {@link PasswordConfig configuration of the crypt step} of the file chop process.
  *
  * @see eu.steffo.cleaver.gui.panels.ChopPanel
  */
@@ -65,14 +66,14 @@ public class CryptRow extends OptionRow {
     }
 
     /**
-     * Create a {@link CryptConfig} from the settings in this {@link OptionRow}.
-     * @return The resulting {@link CryptConfig}, or {@literal null} if the {@link #cryptCheckBox} is unticked.
+     * Create a {@link PasswordConfig} from the settings in this {@link OptionRow}.
+     * @return The resulting {@link PasswordConfig}, or {@literal null} if the {@link #cryptCheckBox} is unticked.
      */
-    public CryptConfig getCryptConfig() {
+    public ICryptConfig getCryptConfig() {
         if(!cryptCheckBox.isSelected()) {
             return null;
         }
-        return new CryptConfig(keyTextField.getText());
+        return new PasswordConfig(keyTextField.getText());
     }
 
     @Override

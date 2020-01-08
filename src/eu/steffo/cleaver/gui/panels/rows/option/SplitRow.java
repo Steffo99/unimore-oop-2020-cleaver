@@ -1,15 +1,16 @@
 package eu.steffo.cleaver.gui.panels.rows.option;
 
-import eu.steffo.cleaver.logic.config.SplitByPartsConfig;
-import eu.steffo.cleaver.logic.config.SplitBySizeConfig;
-import eu.steffo.cleaver.logic.config.SplitConfig;
+import eu.steffo.cleaver.logic.config.PartsConfig;
+import eu.steffo.cleaver.logic.config.ISplitConfig;
+import eu.steffo.cleaver.logic.config.SizeConfig;
+import eu.steffo.cleaver.logic.config.IConfig;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 /**
- * A {@link OptionRow} allowing the {@link SplitConfig configuration of the split step} of the file chop process.
+ * A {@link OptionRow} allowing the {@link IConfig configuration of the split step} of the file chop process.
  *
  * @see eu.steffo.cleaver.gui.panels.ChopPanel
  */
@@ -149,19 +150,19 @@ public class SplitRow extends OptionRow {
     }
 
     /**
-     * Create a {@link SplitConfig} from the settings in this {@link OptionRow}.
-     * @param fileSize The size of the file that the {@link SplitConfig} is being generated for.
-     * @return The resulting {@link SplitConfig}, or {@literal null} if the {@link #splitCheckBox} is unticked.
+     * Create a {@link IConfig} from the settings in this {@link OptionRow}.
+     * @param fileSize The size of the file that the {@link IConfig} is being generated for.
+     * @return The resulting {@link IConfig}, or {@literal null} if the {@link #splitCheckBox} is unticked.
      */
-    public SplitConfig getSplitConfig(long fileSize) throws NumberFormatException {
+    public ISplitConfig getSplitConfig(long fileSize) throws NumberFormatException {
         if(!splitCheckBox.isSelected()) {
             return null;
         }
         else if(!sizeTextField.getText().equals("")) {
-            return new SplitBySizeConfig(Integer.parseInt(sizeTextField.getText()), fileSize);
+            return new SizeConfig(Long.parseLong(sizeTextField.getText()));
         }
         else if(!partsTextField.getText().equals("")) {
-            return new SplitByPartsConfig(Integer.parseInt(partsTextField.getText()), fileSize);
+            return new PartsConfig(Integer.parseInt(partsTextField.getText()));
         }
         else return null;
     }

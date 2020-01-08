@@ -13,9 +13,10 @@ open module eu.steffo.cleaver {
     exports eu.steffo.cleaver.gui.panels;
     exports eu.steffo.cleaver.gui.panels.rows;
     exports eu.steffo.cleaver.gui.panels.rows.option;
-    exports eu.steffo.cleaver.logic;
-    exports eu.steffo.cleaver.logic.compress;
-    exports eu.steffo.cleaver.logic.crypt;
     exports eu.steffo.cleaver.logic.progress;
-    exports eu.steffo.cleaver.logic.split;
+    exports eu.steffo.cleaver.logic.config;
+    exports eu.steffo.cleaver.logic.job;
+    exports eu.steffo.cleaver.logic.stream;
+    exports eu.steffo.cleaver.logic.stream.input;
+    exports eu.steffo.cleaver.logic.stream.output;
 }

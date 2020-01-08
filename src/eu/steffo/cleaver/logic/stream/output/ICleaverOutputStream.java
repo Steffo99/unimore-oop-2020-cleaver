@@ -11,5 +11,5 @@ public interface ICleaverOutputStream extends ICleaverStream {
      * @param doc The {@link Document} the {@link Element} should be created in.
      * @return The created {@link Element}.
      */
-    public Element toElement(Document doc);
+    Element toElement(Document doc);
 }

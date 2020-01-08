@@ -3,11 +3,9 @@ package eu.steffo.cleaver.logic.job;
 import java.io.File;
 import javax.swing.SwingUtilities;
 
-import eu.steffo.cleaver.logic.config.CompressConfig;
-import eu.steffo.cleaver.logic.config.CryptConfig;
+import eu.steffo.cleaver.logic.config.*;
 import eu.steffo.cleaver.logic.progress.NotStartedProgress;
 import eu.steffo.cleaver.logic.progress.Progress;
-import eu.steffo.cleaver.logic.config.SplitConfig;
 
 /**
  * A {@link Thread} that allows access to the basic .
@@ -62,19 +60,19 @@ public abstract class Job extends Thread {
     }
 
     /**
-     * @return The {@link SplitConfig} of the job. If {@literal null}, the job shouldn't handle file splitting/merging.
+     * @return The {@link IConfig} for the Split step of the job. If {@literal null}, the job shouldn't handle file splitting/merging.
      */
-    public abstract SplitConfig getSplitConfig();
+    public abstract ISplitConfig getSplitConfig();
 
     /**
-     * @return The {@link CryptConfig} of the job. If {@literal null}, the job shouldn't handle file encryption/decryption.
+     * @return The {@link IConfig} for the Crypt step of the job. If {@literal null}, the job shouldn't handle file encryption/decryption.
      */
-    public abstract CryptConfig getCryptConfig();
+    public abstract ICryptConfig getCryptConfig();
 
     /**
-     * @return The {@link CompressConfig} of the job. If {@literal null}, the job shouldn't handle file compression/decompression.
+     * @return The {@link IConfig} for the Compress step of the job. If {@literal null}, the job shouldn't handle file compression/decompression.
      */
-    public abstract CompressConfig getCompressConfig();
+    public abstract ICompressConfig getCompressConfig();
 
     /**
      * Set the progress of the job to a different value.

@@ -2,10 +2,7 @@ package eu.steffo.cleaver.logic.job;
 
 import eu.steffo.cleaver.errors.ChpFileError;
 import eu.steffo.cleaver.errors.ProgrammingError;
-import eu.steffo.cleaver.logic.config.CompressConfig;
-import eu.steffo.cleaver.logic.config.CryptConfig;
-import eu.steffo.cleaver.logic.config.MergeConfig;
-import eu.steffo.cleaver.logic.config.SplitConfig;
+import eu.steffo.cleaver.logic.config.*;
 import eu.steffo.cleaver.logic.stream.input.CryptInputStream;
 import eu.steffo.cleaver.logic.progress.ErrorProgress;
 import eu.steffo.cleaver.logic.progress.FinishedProgress;
@@ -25,15 +22,16 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.util.zip.InflaterInputStream;
 
+
 /**
  * A {@link Job} that converts <i>chopped</i> (*.chp + *.cXX) files back into regular files.
  */
 public class StitchJob extends Job {
     private File resultFile;
     private File chpFile;
-    private SplitConfig splitConfig = null;
-    private CryptConfig cryptConfig = null;
-    private CompressConfig compressConfig = null;
+    private ISplitConfig splitConfig = null;
+    private ICryptConfig cryptConfig = null;
+    private ICompressConfig compressConfig = null;
 
     /**
      * Construct a StitchJob, specifying the *.chp file to import the settings from.
@@ -84,17 +82,17 @@ public class StitchJob extends Job {
     }
 
     @Override
-    public SplitConfig getSplitConfig() {
+    public ISplitConfig getSplitConfig() {
         return splitConfig;
     }
 
     @Override
-    public CryptConfig getCryptConfig() {
+    public ICryptConfig getCryptConfig() {
         return cryptConfig;
     }
 
     @Override
-    public CompressConfig getCompressConfig() {
+    public ICompressConfig getCompressConfig() {
         return compressConfig;
     }
 
@@ -125,104 +123,17 @@ public class StitchJob extends Job {
     }
 
     /**
-     * Read a {@link Document} and set the {@link SplitConfig}, {@link CryptConfig} and {@link CompressConfig} of this job accordingly.
+     * Read a {@link Document} and set the {@link IConfig}, {@link PasswordConfig} and {@link DeflateConfig} of this job accordingly.
      * @param doc The {@link Document} to be read.
-     * @param cryptKey The encryption key to use in the {@link CryptConfig}.
+     * @param cryptKey The encryption key to use in the {@link PasswordConfig}.
      * @throws ChpFileError If there's an error while parsing the *.chp file.
      */
     protected void parseChp(Document doc, String cryptKey) throws ChpFileError {
-        Element root = doc.getDocumentElement();
-
-        NodeList originals = root.getElementsByTagName("Original");
-        NodeList splits = root.getElementsByTagName("Split");
-        NodeList crypts = root.getElementsByTagName("Crypt");
-        NodeList compresses = root.getElementsByTagName("Compress");
-
-        Node originalNode = originals.item(0);
-        Node splitNode = splits.item(0);
-        Node cryptNode = crypts.item(0);
-        Node compressNode = compresses.item(0);
-
-        if(originalNode == null) {
-            throw new ChpFileError("No original filename found (<Original> tag)");
-        }
-        Element original = (Element)originalNode;
-        //The resulting file will be in the same directory of the *.chp file
-        resultFile = new File(chpFile.getAbsoluteFile().getParentFile().getAbsolutePath().concat("/" + original.getTextContent()));
-
-        if(splitNode != null) {
-            Element split = (Element)splitNode;
-
-            long partSize;
-            try {
-                partSize = Long.parseLong(split.getAttribute("part-size"));
-            } catch(NumberFormatException e) {
-                throw new ChpFileError("Corrupt part size data.");
-            }
-
-            int parts;
-            try {
-                parts = Integer.parseInt(split.getAttribute("parts"));
-            } catch(NumberFormatException e) {
-                throw new ChpFileError("Corrupt parts data.");
-            }
-
-            long totalSize;
-            try {
-                totalSize = Long.parseLong(split.getAttribute("total-size"));
-            } catch(NumberFormatException e) {
-                throw new ChpFileError("Corrupt total size data.");
-            }
-
-            splitConfig = new MergeConfig(partSize, parts, totalSize);
-        }
-        if(cryptNode != null) {
-            cryptConfig = new CryptConfig(cryptKey);
-        }
-        if(compressNode != null) {
-            compressConfig = new CompressConfig();
-        }
+        //TODO
     }
 
     @Override
     public void run() {
-        try {
-            InputStream inputStream;
-            OutputStream outputStream = new FileOutputStream(resultFile);
-
-            if (splitConfig != null) {
-                inputStream = new CleaverSplitFileInputStream(resultFile.getPath(), splitConfig.getPartSize());
-            }
-            else {
-                inputStream = new FileInputStream(String.format("%s.c0", resultFile.getAbsolutePath()));
-            }
-
-            if (compressConfig != null) {
-                inputStream = new InflaterInputStream(inputStream);
-            }
-
-            if (cryptConfig != null) {
-                inputStream = new CryptInputStream(inputStream, cryptConfig.getKey());
-            }
-
-            //Pipe everything to the output
-            int bytesUntilNextUpdate = 2048;
-            this.setProgress(new WorkingProgress());
-
-            int i;
-            while((i = inputStream.read()) != -1) {
-                outputStream.write(i);
-                bytesUntilNextUpdate -= 1;
-                if(bytesUntilNextUpdate <= 0) {
-                    this.setProgress(new WorkingProgress((float)(resultFile.length() - inputStream.available()) / (float)resultFile.length()));
-                    bytesUntilNextUpdate = 2048;
-                }
-            }
-
-            this.setProgress(new FinishedProgress());
-        } catch (Throwable e) {
-            e.printStackTrace();
-            this.setProgress(new ErrorProgress(e));
-        }
+        //TODO
     }
 }

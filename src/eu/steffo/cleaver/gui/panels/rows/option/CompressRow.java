@@ -1,11 +1,12 @@
 package eu.steffo.cleaver.gui.panels.rows.option;
 
-import eu.steffo.cleaver.logic.config.CompressConfig;
+import eu.steffo.cleaver.logic.config.DeflateConfig;
+import eu.steffo.cleaver.logic.config.ICompressConfig;
 
 import javax.swing.*;
 
 /**
- * A {@link OptionRow} allowing the {@link CompressConfig configuration of the compress step} of the file chop process.
+ * A {@link OptionRow} allowing the {@link DeflateConfig configuration of the compress step} of the file chop process.
  *
  * @see eu.steffo.cleaver.gui.panels.ChopPanel
  */
@@ -32,17 +33,17 @@ public class CompressRow extends OptionRow {
     }
 
     /**
-     * Create a {@link CompressConfig} from the settings in this {@link OptionRow}.
-     * @return The resulting {@link CompressConfig}, or {@literal null} if the {@link #compressionCheckBox} is unticked.
+     * Create a {@link DeflateConfig} from the settings in this {@link OptionRow}.
+     * @return The resulting {@link DeflateConfig}, or {@literal null} if the {@link #compressionCheckBox} is unticked.
      */
-    public CompressConfig getCompressConfig() {
+    public ICompressConfig getCompressConfig() {
         if(!compressionCheckBox.isSelected()) {
             return null;
         }
-        return new CompressConfig();
+        return new DeflateConfig();
     }
 
-    public void setCompressConfig(CompressConfig cfg) {
+    public void setCompressConfig(DeflateConfig cfg) {
         if(cfg == null) {
             compressionCheckBox.setSelected(false);
         }

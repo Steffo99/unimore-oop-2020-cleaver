@@ -4,11 +4,9 @@ import eu.steffo.cleaver.gui.panels.rows.CreateJobButtonRow;
 import eu.steffo.cleaver.gui.panels.rows.option.CompressRow;
 import eu.steffo.cleaver.gui.panels.rows.option.CryptRow;
 import eu.steffo.cleaver.gui.panels.rows.option.SplitRow;
+import eu.steffo.cleaver.logic.config.*;
 import eu.steffo.cleaver.logic.job.ChopJob;
 import eu.steffo.cleaver.logic.job.Job;
-import eu.steffo.cleaver.logic.config.CompressConfig;
-import eu.steffo.cleaver.logic.config.CryptConfig;
-import eu.steffo.cleaver.logic.config.SplitConfig;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -85,7 +83,7 @@ public class ChopPanel extends CreateJobPanel {
         }
         for(File file : fileSelectPanel.getSelectedFiles()) {
 
-            SplitConfig sc;
+            ISplitConfig sc;
             try {
                 sc = splitRow.getSplitConfig(file.length());
             } catch (NumberFormatException exc) {
@@ -93,9 +91,9 @@ public class ChopPanel extends CreateJobPanel {
                 return;
             }
 
-            CryptConfig cc = cryptRow.getCryptConfig();
+            ICryptConfig cc = cryptRow.getCryptConfig();
 
-            CompressConfig zc = compressRow.getCompressConfig();
+            ICompressConfig zc = compressRow.getCompressConfig();
 
             Job job = new ChopJob(file, sc, cc, zc, onProgressChange);
             jobs.add(job);
