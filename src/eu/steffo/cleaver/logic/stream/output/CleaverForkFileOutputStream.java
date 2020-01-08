@@ -62,6 +62,14 @@ public class CleaverForkFileOutputStream extends OutputStream implements ICleave
         }
     }
 
+    @Override
+    public void close() throws IOException {
+        super.close();
+        for(FileOutputStream fileOutputStream : fileOutputStreams) {
+            fileOutputStream.close();
+        }
+    }
+
     /**
      * Get the base {@link File}.
      *

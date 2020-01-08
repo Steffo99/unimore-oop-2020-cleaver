@@ -2,6 +2,7 @@ package eu.steffo.cleaver.logic.stream.input;
 
 import eu.steffo.cleaver.errors.ChpFileError;
 import eu.steffo.cleaver.logic.stream.ICleaverStream;
+import eu.steffo.cleaver.logic.utils.SaltSerializer;
 import org.w3c.dom.Element;
 
 import java.io.File;
@@ -21,7 +22,9 @@ public interface ICleaverInputStream extends ICleaverStream {
         switch (tagName) {
             case "Crypt":
                 InputStream cryptChild = fromElement((Element)element.getFirstChild(), chpFileDirectory, key);
-                return new CleaverCryptInputStream(cryptChild, key.toCharArray(), null, null);
+                byte[] salt = SaltSerializer.deserialize(element.getAttribute("salt"));
+                byte[] iv = SaltSerializer.deserialize(element.getAttribute("iv"));
+                return new CleaverCryptInputStream(cryptChild, key.toCharArray(), salt, iv);
             case "Deflate":
                 InputStream deflateChild = fromElement((Element)element.getFirstChild(), chpFileDirectory, key);
                 return new CleaverDeflateInputStream(deflateChild);

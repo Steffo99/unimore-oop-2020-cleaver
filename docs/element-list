@@ -5,8 +5,10 @@ eu.steffo.cleaver.gui
 eu.steffo.cleaver.gui.panels
 eu.steffo.cleaver.gui.panels.rows
 eu.steffo.cleaver.gui.panels.rows.option
-eu.steffo.cleaver.logic
-eu.steffo.cleaver.logic.compress
-eu.steffo.cleaver.logic.crypt
+eu.steffo.cleaver.logic.config
+eu.steffo.cleaver.logic.job
 eu.steffo.cleaver.logic.progress
-eu.steffo.cleaver.logic.split
+eu.steffo.cleaver.logic.stream
+eu.steffo.cleaver.logic.stream.input
+eu.steffo.cleaver.logic.stream.output
+eu.steffo.cleaver.logic.utils

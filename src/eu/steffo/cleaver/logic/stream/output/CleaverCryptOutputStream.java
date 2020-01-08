@@ -1,5 +1,6 @@
 package eu.steffo.cleaver.logic.stream.output;
 
+import eu.steffo.cleaver.logic.utils.SaltSerializer;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -36,7 +37,7 @@ public class CleaverCryptOutputStream extends FilterOutputStream implements ICle
     /**
      * The padding standard used for the encryption (<a href="https://en.wikipedia.org/wiki/PKCS">PKCS#5</a>).
      */
-    private final String padding = "PKCS5Padding";
+    private final String padding = "NoPadding";
 
     /**
      * The size in bytes of the <a href="https://en.wikipedia.org/wiki/Salt_(cryptography)">salt</a>.
@@ -184,11 +185,11 @@ public class CleaverCryptOutputStream extends FilterOutputStream implements ICle
         element.setAttributeNode(keyLengthAttr);
 
         Attr ivAttr = doc.createAttribute("iv");
-        ivAttr.setValue(Arrays.toString(cipher.getIV()));
+        ivAttr.setValue(SaltSerializer.serialize(cipher.getIV()));
         element.setAttributeNode(ivAttr);
 
         Attr saltAttr = doc.createAttribute("salt");
-        saltAttr.setValue(Arrays.toString(cipher.getIV()));
+        saltAttr.setValue(SaltSerializer.serialize(salt));
         element.setAttributeNode(saltAttr);
 
         return element;

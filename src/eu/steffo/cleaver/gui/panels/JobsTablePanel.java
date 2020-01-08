@@ -54,7 +54,7 @@ public class JobsTablePanel extends JPanel {
             switch(columnIndex) {
                 case 0: return "Type";
                 case 1: return "File";
-                case 2: return "Split";
+                case 2: return "Process";
                 case 3: return "Progress";
             }
             return null;

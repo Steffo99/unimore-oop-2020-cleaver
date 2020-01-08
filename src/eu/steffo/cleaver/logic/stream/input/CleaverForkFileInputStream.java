@@ -30,6 +30,14 @@ public class CleaverForkFileInputStream extends InputStream implements ICleaverI
         return b;
     }
 
+    @Override
+    public void close() throws IOException {
+        super.close();
+        for(FileInputStream fileInputStream : fileInputStreams) {
+            fileInputStream.close();
+        }
+    }
+
     /**
      * Get the base {@link File}.
      *

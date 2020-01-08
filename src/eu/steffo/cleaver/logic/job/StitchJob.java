@@ -149,6 +149,8 @@ public class StitchJob extends Job {
         return doc;
     }
 
+    private static final int UPDATE_EVERY_BYTES = 16000;
+
     @Override
     public void run() {
         try {
@@ -160,7 +162,7 @@ public class StitchJob extends Job {
             OutputStream outputStream = new FileOutputStream(resultFile);
 
             //Pipe everything to the output
-            int bytesUntilNextUpdate = 2048;
+            int bytesUntilNextUpdate = UPDATE_EVERY_BYTES;
             this.setProgress(new WorkingProgress());
 
             int i;
@@ -169,7 +171,7 @@ public class StitchJob extends Job {
                 bytesUntilNextUpdate -= 1;
                 if(bytesUntilNextUpdate <= 0) {
                     this.setProgress(new WorkingProgress((float)(resultFile.length() - inputStream.available()) / (float)resultFile.length()));
-                    bytesUntilNextUpdate = 2048;
+                    bytesUntilNextUpdate = UPDATE_EVERY_BYTES;
                 }
             }
 

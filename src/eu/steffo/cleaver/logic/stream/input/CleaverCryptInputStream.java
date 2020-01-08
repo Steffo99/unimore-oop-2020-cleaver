@@ -13,7 +13,6 @@ import java.io.InputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
@@ -31,9 +30,9 @@ public class CleaverCryptInputStream extends FilterInputStream implements ICleav
     private final String modeOfOperation = "CFB8";
 
     /**
-     * The padding standard used for the encryption (<a href="https://en.wikipedia.org/wiki/PKCS">PKCS#5</a>).
+     * The padding standard used for the encryption (none, as there's no need for it with 8-bit blocks).
      */
-    private final String padding = "PKCS5Padding";
+    private final String padding = "NoPadding";
 
     /**
      * The size in bytes of the <a href="https://en.wikipedia.org/wiki/Salt_(cryptography)">salt</a>.
@@ -108,6 +107,10 @@ public class CleaverCryptInputStream extends FilterInputStream implements ICleav
     @Override
     public int read() throws IOException {
         int encryptedInt = super.read();
+        //End of file
+        if(encryptedInt == -1) {
+            return -1;
+        }
         byte[] encryptedByte = new byte[1];
         encryptedByte[0] = (byte)encryptedInt;
         byte[] decryptedByte = cipher.update(encryptedByte);
