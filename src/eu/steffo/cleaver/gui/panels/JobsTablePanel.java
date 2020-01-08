@@ -1,10 +1,11 @@
 package eu.steffo.cleaver.gui.panels;
 
-import eu.steffo.cleaver.logic.config.*;
 import eu.steffo.cleaver.logic.job.Job;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -45,7 +46,7 @@ public class JobsTablePanel extends JPanel {
 
         @Override
         public int getColumnCount() {
-            return 6;
+            return 4;
         }
 
         @Override
@@ -54,9 +55,7 @@ public class JobsTablePanel extends JPanel {
                 case 0: return "Type";
                 case 1: return "File";
                 case 2: return "Split";
-                case 3: return "Crypt";
-                case 4: return "Compress";
-                case 5: return "Progress";
+                case 3: return "Progress";
             }
             return null;
         }
@@ -76,22 +75,12 @@ public class JobsTablePanel extends JPanel {
             Job job = jobs.get(rowIndex);
             switch (columnIndex) {
                 case 0:
-                    return job.getType();
+                    return job.getTypeString();
                 case 1:
-                    return job.getFile().getAbsolutePath();
+                    return job.getFileString();
                 case 2:
-                    ISplitConfig s = job.getSplitConfig();
-                    if(s == null) return "";
-                    return s.toString();
+                    return job.getProcessString();
                 case 3:
-                    ICryptConfig k = job.getCryptConfig();
-                    if(k == null) return "";
-                    return k.toString();
-                case 4:
-                    ICompressConfig c = job.getCompressConfig();
-                    if(c == null) return "";
-                    return c.toString();
-                case 5:
                     return job.getProgress().toString();
             }
             return "Unknown";

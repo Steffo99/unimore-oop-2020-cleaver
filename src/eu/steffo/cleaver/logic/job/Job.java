@@ -37,18 +37,6 @@ public abstract class Job extends Thread {
     }
 
     /**
-     * @return The name of the job type, such as "Chop" for a {@link ChopJob}.
-     *
-     * It will be displayed in the {@link eu.steffo.cleaver.gui.panels.JobsTablePanel}.
-     */
-    public abstract String getType();
-
-    /**
-     * @return The file path the job should act on.
-     */
-    public abstract File getFile();
-
-    /**
      * @return The current progress of the job.
      * @see eu.steffo.cleaver.logic.progress.NotStartedProgress
      * @see eu.steffo.cleaver.logic.progress.WorkingProgress
@@ -60,19 +48,19 @@ public abstract class Job extends Thread {
     }
 
     /**
-     * @return The {@link IConfig} for the Split step of the job. If {@literal null}, the job shouldn't handle file splitting/merging.
+     * @return The {@link String} that should be displayed in the Type column of the {@link eu.steffo.cleaver.gui.panels.JobsTablePanel Jobs Table}.
      */
-    public abstract ISplitConfig getSplitConfig();
+    public abstract String getTypeString();
 
     /**
-     * @return The {@link IConfig} for the Crypt step of the job. If {@literal null}, the job shouldn't handle file encryption/decryption.
+     * @return The {@link String} that should be displayed in the File column of the {@link eu.steffo.cleaver.gui.panels.JobsTablePanel Jobs Table}.
      */
-    public abstract ICryptConfig getCryptConfig();
+    public abstract String getFileString();
 
     /**
-     * @return The {@link IConfig} for the Compress step of the job. If {@literal null}, the job shouldn't handle file compression/decompression.
+     * @return The {@link String} that should be displayed in the Process column of the {@link eu.steffo.cleaver.gui.panels.JobsTablePanel Jobs Table}.
      */
-    public abstract ICompressConfig getCompressConfig();
+    public abstract String getProcessString();
 
     /**
      * Set the progress of the job to a different value.

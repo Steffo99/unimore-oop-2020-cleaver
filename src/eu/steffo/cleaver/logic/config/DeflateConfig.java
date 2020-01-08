@@ -6,6 +6,6 @@ package eu.steffo.cleaver.logic.config;
 public class DeflateConfig implements ICompressConfig {
     @Override
     public String toString() {
-        return "Yes (Deflate)";
+        return "Compress (Deflate)";
     }
 }

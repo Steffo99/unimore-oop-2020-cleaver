@@ -9,7 +9,6 @@ import eu.steffo.cleaver.logic.progress.FinishedProgress;
 import eu.steffo.cleaver.logic.progress.Progress;
 import eu.steffo.cleaver.logic.progress.WorkingProgress;
 
-import eu.steffo.cleaver.logic.stream.input.CleaverSplitFileInputStream;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -20,18 +19,15 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
-import java.util.zip.InflaterInputStream;
 
 
 /**
  * A {@link Job} that converts <i>chopped</i> (*.chp + *.cXX) files back into regular files.
  */
 public class StitchJob extends Job {
-    private File resultFile;
-    private File chpFile;
-    private ISplitConfig splitConfig = null;
-    private ICryptConfig cryptConfig = null;
-    private ICompressConfig compressConfig = null;
+    private String cryptKey;
+    private File chpFolder;
+    private Document chpDocument;
 
     /**
      * Construct a StitchJob, specifying the *.chp file to import the settings from.
@@ -56,7 +52,7 @@ public class StitchJob extends Job {
     }
 
     /**
-     * Construct a StitchJob, and additionally specify the {@link Runnable} that should be called on progress updates..
+     * Construct a StitchJob, and additionally specify the {@link Runnable} that should be called on progress updates.
      * @param chpFile The *.chp file.
      * @param cryptKey The encryption key to use while decrypting the files.
      * @param updateTable The {@link Runnable} that should be invoked when {@link #setProgress(Progress)} is called.
@@ -67,43 +63,74 @@ public class StitchJob extends Job {
      */
     public StitchJob(File chpFile, String cryptKey, Runnable updateTable) throws ChpFileError, ProgrammingError {
         super(updateTable);
-        this.chpFile = chpFile;
-        parseChp(getChpFileDocument(chpFile), cryptKey);
+        this.cryptKey = cryptKey;
+        this.chpDocument = getChpFileDocument(chpFile);
+        this.chpFolder = chpFile.getParentFile();
     }
 
     @Override
-    public String getType() {
+    public String getTypeString() {
         return "Stitch";
     }
 
-    @Override
-    public File getFile() {
-        return resultFile;
+    public File getResultFile() {
+        return new File(chpFolder, chpDocument.getElementsByTagName("OriginalFile").item(0).getTextContent());
     }
 
     @Override
-    public ISplitConfig getSplitConfig() {
-        return splitConfig;
+    public String getFileString() {
+        return getResultFile().toString();
     }
 
     @Override
-    public ICryptConfig getCryptConfig() {
-        return cryptConfig;
-    }
+    public String getProcessString() {
+        Element element = (Element)(chpDocument.getDocumentElement().getFirstChild());
+        StringBuilder s = new StringBuilder();
 
-    @Override
-    public ICompressConfig getCompressConfig() {
-        return compressConfig;
+        boolean arrow = false;
+
+        while(!element.getTagName().equals("OriginalFile")) {
+
+            if(arrow) {
+                s.append(" → ");
+            }
+
+            String tagName = element.getTagName();
+            switch (tagName) {
+                case "Crypt":
+                    s.append("Decrypt");
+                    break;
+                case "Deflate":
+                    s.append("Decompress (Deflate)");
+                    break;
+                case "Fork":
+                    s.append(String.format("Merge (%s parts)", element.getAttribute("parts")));
+                    break;
+                case "Simple":
+                    break;
+                case "Split":
+                    s.append(String.format("Merge (%s bytes)", element.getAttribute("part-size")));
+                    break;
+                default:
+                    s.append("Unknown");
+                    break;
+            }
+
+            element = (Element)element.getFirstChild();
+            arrow = true;
+        }
+
+        return s.toString();
     }
 
     /**
-     * Instantiate a new {@link Document} based on the contents of a *.chp file.
-     * @param file The *.chp {@link File} to create the document from.
+     * Instantiate a new {@link Document} based on the contents of the passed file.
+     * @param chpFile The file to create a {@link Document} from.
      * @return The created {@link Document}.
      * @throws ChpFileError If the .chp does not exist, or is corrupt.
      * @throws ProgrammingError It should never happen, as the parser should be already configured correctly.
      */
-    protected static Document getChpFileDocument(File file) throws ChpFileError, ProgrammingError {
+    protected static Document getChpFileDocument(File chpFile) throws ChpFileError, ProgrammingError {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         try {
@@ -113,7 +140,7 @@ public class StitchJob extends Job {
         }
         Document doc;
         try {
-            doc = builder.parse(file);
+            doc = builder.parse(chpFile);
         } catch (SAXException e) {
             throw new ChpFileError("The .chp is corrupt!");
         } catch (IOException e) {
@@ -122,41 +149,39 @@ public class StitchJob extends Job {
         return doc;
     }
 
-    /**
-     * Read a {@link Element} and create a {@link ICleaverInputStream} based on it.
-     * @param element The {@link Element} to be read.
-     * @param cryptKey The encryption key to use in case a {@link CleaverCryptInputStream} is created.
-     * @throws ChpFileError If there's an error while parsing the node.
-     */
-    protected ICleaverInputStream parseNode(Element element, String cryptKey) throws ChpFileError {
-        String name = element.getTagName();
-
-        ICleaverInputStream result;
-
-        if(name.equals("Crypt")) {
-            //TODO
-        }
-        else if(name.equals("Deflate")) {
-            //TODO
-        }
-        else if(name.equals("Fork")) {
-            //TODO
-        }
-        else if(name.equals("Simple")) {
-            //TODO
-        }
-        else if(name.equals("Split")) {
-            //TODO
-        }
-        else {
-            throw new ChpFileError("Unknown tag: " + name);
-        }
-
-        return result;
-    }
-
     @Override
     public void run() {
-        //TODO
+        try {
+            Element root = chpDocument.getDocumentElement();
+            Element cleaverNode = (Element)root.getFirstChild();
+            File resultFile = getResultFile();
+
+            InputStream inputStream = ICleaverInputStream.fromElement(cleaverNode, chpFolder, cryptKey);
+            OutputStream outputStream = new FileOutputStream(resultFile);
+
+            //Pipe everything to the output
+            int bytesUntilNextUpdate = 2048;
+            this.setProgress(new WorkingProgress());
+
+            int i;
+            while((i = inputStream.read()) != -1) {
+                outputStream.write(i);
+                bytesUntilNextUpdate -= 1;
+                if(bytesUntilNextUpdate <= 0) {
+                    this.setProgress(new WorkingProgress((float)(resultFile.length() - inputStream.available()) / (float)resultFile.length()));
+                    bytesUntilNextUpdate = 2048;
+                }
+            }
+
+            inputStream.close();
+            outputStream.close();
+
+            this.setProgress(new FinishedProgress());
+
+        } catch (Throwable e) {
+            e.printStackTrace();
+            this.setProgress(new ErrorProgress(e));
+        }
+
     }
 }

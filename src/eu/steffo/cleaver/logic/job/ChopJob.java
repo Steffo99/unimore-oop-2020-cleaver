@@ -60,28 +60,38 @@ public class ChopJob extends Job {
     }
 
     @Override
-    public String getType() {
+    public String getTypeString() {
         return "Chop";
     }
 
     @Override
-    public File getFile() {
-        return file;
+    public String getFileString() {
+        return file.toString();
     }
 
     @Override
-    public ISplitConfig getSplitConfig() {
-        return splitConfig;
-    }
+    public String getProcessString() {
+        StringBuilder s = new StringBuilder();
 
-    @Override
-    public ICryptConfig getCryptConfig() {
-        return cryptConfig;
-    }
+        if(compressConfig != null) {
+            s.append(compressConfig.toString());
+            if(cryptConfig != null || splitConfig != null) {
+                s.append(" → ");
+            }
+        }
 
-    @Override
-    public ICompressConfig getCompressConfig() {
-        return compressConfig;
+        if(cryptConfig != null) {
+            s.append(cryptConfig.toString());
+            if(splitConfig != null) {
+                s.append(" → ");
+            }
+        }
+
+        if(splitConfig != null) {
+            s.append(splitConfig.toString());
+        }
+
+        return s.toString();
     }
 
     @Override
@@ -105,7 +115,7 @@ public class ChopJob extends Job {
             }
 
             if(cryptConfig instanceof PasswordConfig) {
-                outputStream = new CleaverCryptOutputStream(outputStream, ((PasswordConfig)cryptConfig).getKey());
+                outputStream = new CleaverCryptOutputStream(outputStream, ((PasswordConfig)cryptConfig).getKey().toCharArray());
             }
 
             //Create the .chp file

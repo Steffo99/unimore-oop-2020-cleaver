@@ -19,7 +19,7 @@ public class PartsConfig implements ISplitConfig {
 
     @Override
     public String toString() {
-        return String.format("%d parts", this.parts);
+        return String.format("Split (%d parts)", this.parts);
     }
 
     public int getPartCount() {

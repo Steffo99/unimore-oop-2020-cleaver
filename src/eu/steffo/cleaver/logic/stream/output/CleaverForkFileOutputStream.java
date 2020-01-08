@@ -36,7 +36,10 @@ public class CleaverForkFileOutputStream extends OutputStream implements ICleave
     @Override
     public Element toElement(Document doc) {
         Element element = doc.createElement("Fork");
-        element.setTextContent(baseFile.getName());
+
+        Element fileElement = doc.createElement("OriginalFile");
+        fileElement.setTextContent(baseFile.getName());
+        element.appendChild(fileElement);
 
         Attr partSizeAttr = doc.createAttribute("part-size");
         partSizeAttr.setValue(Long.toString(partSize));
@@ -62,16 +65,18 @@ public class CleaverForkFileOutputStream extends OutputStream implements ICleave
     /**
      * Get the base {@link File}.
      *
-     * The base {@link File} is the one that gives the name to all generated files, including the file parts (*.cXX) and the reconstructed file.
+     * The base {@link File} gives the name to all generated files, including the file parts (*.cXX) and the reconstructed file.
      *
      * For example, if it is {@literal foo.txt}, the created files will be {@literal foo.txt.c1}, {@literal foo.txt.c2}, and so on.
+     *
+     * @return The base file.
      */
     public File getBaseFile() {
         return baseFile;
     }
 
     /**
-     * @return The current maximum size of a part, in bytes.
+     * @return The number of bytes written to each part.
      */
     public long getPartSize() {
         return partSize;

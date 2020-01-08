@@ -74,6 +74,8 @@ public class CleaverSplitFileOutputStream extends OutputStream implements ICleav
      * The base {@link File} is the one that gives the name to all generated files, including the file parts (*.cXX) and the reconstructed file.
      *
      * For example, if it is {@literal foo.txt}, the created files will be {@literal foo.txt.c1}, {@literal foo.txt.c2}, and so on.
+     *
+     * @return The base file.
      */
     public File getBaseFile() {
         return baseFile;
@@ -103,7 +105,10 @@ public class CleaverSplitFileOutputStream extends OutputStream implements ICleav
     @Override
     public Element toElement(Document doc) {
         Element element = doc.createElement("Split");
-        element.setTextContent(baseFile.getName());
+
+        Element fileElement = doc.createElement("OriginalFile");
+        fileElement.setTextContent(baseFile.getName());
+        element.appendChild(fileElement);
 
         Attr partSizeAttr = doc.createAttribute("part-size");
         partSizeAttr.setValue(Long.toString(maximumByteCount));

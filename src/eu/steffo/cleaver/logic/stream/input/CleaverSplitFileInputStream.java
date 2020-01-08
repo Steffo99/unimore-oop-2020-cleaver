@@ -1,11 +1,11 @@
 package eu.steffo.cleaver.logic.stream.input;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import org.w3c.dom.Element;
+
+import java.io.*;
 
 public class CleaverSplitFileInputStream extends InputStream implements ICleaverInputStream {
-    private final String fileBaseName;
+    private final File baseFile;
     private long currentByteCount;
     private long maximumByteCount;
     private int currentFileCount;
@@ -17,11 +17,13 @@ public class CleaverSplitFileInputStream extends InputStream implements ICleaver
 
     /**
      * Construct a SplitFileInputStream.
-     * @param fileBaseName The name of the files without the extension. If it is {@literal example}, the opened files will be {@literal example.c1}, {@literal example.c2}, and so on.
+     * It will read data from the files having the same name as the {@link #baseFile} and a *.cXX extension.
+     *
+     * @param baseFile The {@link File} to be reconstructed.
      * @param maximumByteCount The number of bytes that should be read from a file before switching to the next one.
      */
-    public CleaverSplitFileInputStream(String fileBaseName, long maximumByteCount) {
-        this.fileBaseName = fileBaseName;
+    public CleaverSplitFileInputStream(File baseFile, long maximumByteCount) {
+        this.baseFile = baseFile;
         this.maximumByteCount = maximumByteCount;
         this.currentByteCount = 0;
         this.currentFileCount = 0;
@@ -38,7 +40,7 @@ public class CleaverSplitFileInputStream extends InputStream implements ICleaver
         }
 
         currentFileCount += 1;
-        currentFileInputStream = new FileInputStream(String.format("%s.c%d", fileBaseName, currentFileCount));
+        currentFileInputStream = new FileInputStream(String.format("%s.c%d", baseFile.getAbsolutePath(), currentFileCount));
         currentByteCount = 0;
     }
 
@@ -58,10 +60,16 @@ public class CleaverSplitFileInputStream extends InputStream implements ICleaver
     }
 
     /**
-     * @return The name of the files without the extension. If it is {@literal example}, the opened files will be {@literal example.c1}, {@literal example.c2}, and so on.
+     * Get the base {@link File}.
+     *
+     * The stream will read from multiple files having a name constituted by the base {@link File} name and a *.cXX extension.
+     *
+     * For example, if it is {@literal foo.txt}, the stream will read from {@literal foo.txt.c1}, {@literal foo.txt.c2}, and so on.
+     *
+     * @return The base file.
      */
-    public String getFileBaseName() {
-        return fileBaseName;
+    public File getBaseFile() {
+        return baseFile;
     }
 
     /**

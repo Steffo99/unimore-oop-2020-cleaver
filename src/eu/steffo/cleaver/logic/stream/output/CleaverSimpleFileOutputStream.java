@@ -24,7 +24,10 @@ public class CleaverSimpleFileOutputStream extends FileOutputStream implements I
     @Override
     public Element toElement(Document doc) {
         Element element = doc.createElement("Simple");
-        element.setTextContent(baseFile.getName());
+
+        Element fileElement = doc.createElement("OriginalFile");
+        fileElement.setTextContent(baseFile.getName());
+        element.appendChild(fileElement);
 
         return element;
     }

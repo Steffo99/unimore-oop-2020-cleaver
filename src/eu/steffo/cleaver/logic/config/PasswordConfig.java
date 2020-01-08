@@ -23,6 +23,6 @@ public class PasswordConfig implements ICryptConfig {
 
     @Override
     public String toString() {
-        return "••••••••";
+        return "Encrypt";
     }
 }

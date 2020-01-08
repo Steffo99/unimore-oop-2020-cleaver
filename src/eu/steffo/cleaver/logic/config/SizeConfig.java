@@ -19,7 +19,7 @@ public class SizeConfig implements ISplitConfig {
 
     @Override
     public String toString() {
-        return String.format("%d bytes", this.partSize);
+        return String.format("Split (%d bytes)", this.partSize);
     }
 
     public long getPartSize() {
