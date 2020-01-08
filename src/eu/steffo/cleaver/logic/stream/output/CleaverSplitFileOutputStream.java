@@ -4,6 +4,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -14,7 +15,7 @@ import java.io.OutputStream;
  * Bytes are written to a file until its length reaches {@link #maximumByteCount}, then the program switches to the following file (.c2 if .c1 is full, .c3 if .c2 is full, and so on).
  */
 public class CleaverSplitFileOutputStream extends OutputStream implements ICleaverOutputStream {
-    private final String fileBaseName;
+    private final File baseFile;
     private long currentByteCount;
     private long maximumByteCount;
     private int currentFileCount;
@@ -26,11 +27,12 @@ public class CleaverSplitFileOutputStream extends OutputStream implements ICleav
 
     /**
      * Construct a CleaverSplitFileOutputStream.
-     * @param fileBaseName The name of the files without the extension. If it is {@literal example}, the created files will be {@literal example.c1}, {@literal example.c2}, and so on.
+     * @param baseFile The {@link File} that will be reconstructed after reversing the Split operation.
+     *                 The split files will have the same name with the addition of a .cXX extension.
      * @param maximumByteCount The number of bytes that should be written to a file before switching to the next one.
      */
-    public CleaverSplitFileOutputStream(String fileBaseName, long maximumByteCount) {
-        this.fileBaseName = fileBaseName;
+    public CleaverSplitFileOutputStream(File baseFile, long maximumByteCount) {
+        this.baseFile = baseFile;
         this.maximumByteCount = maximumByteCount;
         this.currentByteCount = 0;
         this.currentFileCount = 0;
@@ -47,7 +49,7 @@ public class CleaverSplitFileOutputStream extends OutputStream implements ICleav
         }
 
         currentFileCount += 1;
-        currentFileOutputStream = new FileOutputStream(String.format("%s.c%d", fileBaseName, currentFileCount));
+        currentFileOutputStream = new FileOutputStream(String.format("%s.c%d", baseFile.getAbsolutePath(), currentFileCount));
         currentByteCount = 0;
     }
 
@@ -67,10 +69,14 @@ public class CleaverSplitFileOutputStream extends OutputStream implements ICleav
     }
 
     /**
-     * @return The name of the files without the extension. If it is {@literal example}, the created files will be {@literal example.c1}, {@literal example.c2}, and so on.
+     * Get the base {@link File}.
+     *
+     * The base {@link File} is the one that gives the name to all generated files, including the file parts (*.cXX) and the reconstructed file.
+     *
+     * For example, if it is {@literal foo.txt}, the created files will be {@literal foo.txt.c1}, {@literal foo.txt.c2}, and so on.
      */
-    public String getFileBaseName() {
-        return fileBaseName;
+    public File getBaseFile() {
+        return baseFile;
     }
 
     /**
@@ -97,7 +103,7 @@ public class CleaverSplitFileOutputStream extends OutputStream implements ICleav
     @Override
     public Element toElement(Document doc) {
         Element element = doc.createElement("Split");
-        element.setTextContent(fileBaseName);
+        element.setTextContent(baseFile.getName());
 
         Attr partSizeAttr = doc.createAttribute("part-size");
         partSizeAttr.setValue(Long.toString(maximumByteCount));

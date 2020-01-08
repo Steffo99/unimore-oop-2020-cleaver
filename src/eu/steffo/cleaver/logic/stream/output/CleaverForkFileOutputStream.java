@@ -12,21 +12,21 @@ import java.io.*;
  * Bytes are written one at a time to the files in a round-robin format until the stream is exausted.
  */
 public class CleaverForkFileOutputStream extends OutputStream implements ICleaverOutputStream {
-    private final String fileBaseName;
+    private final File baseFile;
     private FileOutputStream[] fileOutputStreams;
     private int writeTo;
     private long partSize;
 
     /**
      * Construct a CleaverForkFileOutputStream.
-     * @param fileBaseName The name of the files without the extension. If it is {@literal example}, the created files will be {@literal example.c1}, {@literal example.c2}, and so on.
+     * @param baseFile The name of the files without the extension. If it is {@literal example}, the created files will be {@literal example.c1}, {@literal example.c2}, and so on.
      * @param parts The number of parts to be created.
      */
-    public CleaverForkFileOutputStream(String fileBaseName, int parts) throws FileNotFoundException {
-        this.fileBaseName = fileBaseName;
+    public CleaverForkFileOutputStream(File baseFile, int parts) throws FileNotFoundException {
+        this.baseFile = baseFile;
         this.fileOutputStreams = new FileOutputStream[parts];
         for(int i = 0; i < parts; i++) {
-            File file = new File(String.format("%s.c%s", fileBaseName, i));
+            File file = new File(String.format("%s.c%s", baseFile.getAbsolutePath(), i));
             this.fileOutputStreams[i] = new FileOutputStream(file);
         }
         this.writeTo = 0;
@@ -36,7 +36,7 @@ public class CleaverForkFileOutputStream extends OutputStream implements ICleave
     @Override
     public Element toElement(Document doc) {
         Element element = doc.createElement("Fork");
-        element.setTextContent(fileBaseName);
+        element.setTextContent(baseFile.getName());
 
         Attr partSizeAttr = doc.createAttribute("part-size");
         partSizeAttr.setValue(Long.toString(partSize));
@@ -60,10 +60,14 @@ public class CleaverForkFileOutputStream extends OutputStream implements ICleave
     }
 
     /**
-     * @return The name of the files without the extension. If it is {@literal example}, the created files will be {@literal example.c1}, {@literal example.c2}, and so on.
+     * Get the base {@link File}.
+     *
+     * The base {@link File} is the one that gives the name to all generated files, including the file parts (*.cXX) and the reconstructed file.
+     *
+     * For example, if it is {@literal foo.txt}, the created files will be {@literal foo.txt.c1}, {@literal foo.txt.c2}, and so on.
      */
-    public String getFileBaseName() {
-        return fileBaseName;
+    public File getBaseFile() {
+        return baseFile;
     }
 
     /**

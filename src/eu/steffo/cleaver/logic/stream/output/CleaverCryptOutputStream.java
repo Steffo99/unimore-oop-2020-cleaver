@@ -54,7 +54,7 @@ public class CleaverCryptOutputStream extends FilterOutputStream implements ICle
     /**
      * The length in bits of the key to be generated with the {@link #KEY_DERIVATION_ALGORITHM}.
      */
-    public static final int KEY_LENGTH = 512;
+    public static final int KEY_LENGTH = 256;
 
     /**
      * @return The full transformation string as required by {@link Cipher#getInstance(String)}.
@@ -70,7 +70,7 @@ public class CleaverCryptOutputStream extends FilterOutputStream implements ICle
      * @see SecureRandom
      */
     protected byte[] generateSecure(int size) {
-        byte[] salt = new byte[8];
+        byte[] salt = new byte[size];
         SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(salt);
         return salt;
@@ -111,7 +111,7 @@ public class CleaverCryptOutputStream extends FilterOutputStream implements ICle
         SecretKey aes = new SecretKeySpec(generatePasswordKey(key).getEncoded(), ENCRYPTION_ALGORITHM);
 
         //Generate the initialization vector
-        IvParameterSpec iv = generateIV(1);
+        IvParameterSpec iv = generateIV(16);
 
         //Init the cipher instance
         cipher.init(Cipher.ENCRYPT_MODE, aes, iv);

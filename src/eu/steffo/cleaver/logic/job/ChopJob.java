@@ -18,6 +18,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * A {@link Job} that converts regular files into <i>chopped</i> (*.chp + *.cXX) files.
@@ -40,7 +42,7 @@ public class ChopJob extends Job {
      */
     public ChopJob(File file, ISplitConfig splitConfig, ICryptConfig cryptConfig, ICompressConfig compressConfig, Runnable onProgressChange) {
         super(onProgressChange);
-        this.file = file;
+        this.file = file.getAbsoluteFile();
         this.splitConfig = splitConfig;
         this.cryptConfig = cryptConfig;
         this.compressConfig = compressConfig;
@@ -91,13 +93,13 @@ public class ChopJob extends Job {
             OutputStream outputStream;
 
             if(splitConfig instanceof SizeConfig) {
-                outputStream = new CleaverSplitFileOutputStream(file.getAbsolutePath(), ((SizeConfig)splitConfig).getPartSize());
+                outputStream = new CleaverSplitFileOutputStream(file, ((SizeConfig)splitConfig).getPartSize());
             }
             else if(splitConfig instanceof PartsConfig) {
-                outputStream = new CleaverForkFileOutputStream(file.getAbsolutePath(), ((PartsConfig)splitConfig).getPartCount());
+                outputStream = new CleaverForkFileOutputStream(file, ((PartsConfig)splitConfig).getPartCount());
             }
             else {
-                outputStream = new CleaverSimpleFileOutputStream(file.getAbsolutePath());
+                outputStream = new CleaverSimpleFileOutputStream(file);
             }
 
             if(compressConfig instanceof DeflateConfig) {
