@@ -2,12 +2,38 @@ package eu.steffo.cleaver.logic.stream.input;
 
 import java.io.*;
 
+/**
+ * A {@link ICleaverInputStream} that reads split data from a specific number of files having the same size.
+ *
+ * Bytes are read one at a time from the files in a round-robin format until their streams are exausted.
+ */
 public class CleaverForkFileInputStream extends InputStream implements ICleaverInputStream {
+    /**
+     * @see #getBaseFile()
+     */
     private final File baseFile;
+
+    /**
+     * The {@link FileInputStream FileInputStreams} from where bytes are read.
+     */
     private FileInputStream[] fileInputStreams;
-    private int writeTo;
+
+    /**
+     * The index of the next {@link #fileInputStreams FileInputStream} to read a byte from.
+     */
+    private int readFrom;
+
+    /**
+     * The number of bytes that have been read from a single part.
+     */
     private long partSize;
 
+    /**
+     * Construct a new CleaverForkFileInputStream.
+     * @param baseFile {@link #getBaseFile() Please see getBaseFile().}
+     * @param parts The number of parts the original file is split into.
+     * @throws FileNotFoundException If a required file isn't found.
+     */
     public CleaverForkFileInputStream(File baseFile, int parts) throws FileNotFoundException {
         this.baseFile = baseFile;
         this.fileInputStreams = new FileInputStream[parts];
@@ -15,35 +41,17 @@ public class CleaverForkFileInputStream extends InputStream implements ICleaverI
             File file = new File(String.format("%s.c%s", baseFile.getAbsolutePath(), i));
             this.fileInputStreams[i] = new FileInputStream(file);
         }
-        this.writeTo = 0;
+        this.readFrom = 0;
         this.partSize = 1;
-    }
-
-    @Override
-    public int read() throws IOException {
-        int b = fileInputStreams[writeTo].read();
-        writeTo += 1;
-        if(writeTo >= fileInputStreams.length) {
-            writeTo = 0;
-            partSize += 1;
-        }
-        return b;
-    }
-
-    @Override
-    public void close() throws IOException {
-        super.close();
-        for(FileInputStream fileInputStream : fileInputStreams) {
-            fileInputStream.close();
-        }
     }
 
     /**
      * Get the base {@link File}.
      *
-     * The stream will read from multiple files having a name constituted by the base {@link File} name and a *.cXX extension.
+     * The base file is the {@link File} that was split by a {@link eu.steffo.cleaver.logic.stream.output.CleaverForkFileOutputStream} and will be now
+     * reconstructed by this object.
      *
-     * For example, if it is {@literal foo.txt}, the stream will read from {@literal foo.txt.c1}, {@literal foo.txt.c2}, and so on.
+     * The files read by this stream have the same name of the base file with the addition of a .cXX extension.
      *
      * @return The base file.
      */
@@ -52,7 +60,7 @@ public class CleaverForkFileInputStream extends InputStream implements ICleaverI
     }
 
     /**
-     * @return The number of bytes read from each part.
+     * @return The number of bytes that have been read from a single part.
      */
     public long getPartSize() {
         return partSize;
@@ -66,9 +74,35 @@ public class CleaverForkFileInputStream extends InputStream implements ICleaverI
     }
 
     /**
-     * @return The number of the next file where a byte should be read from, starting from 0 to the number of parts -1.
+     * @return The index of the next {@link #fileInputStreams FileInputStream} to read from.
      */
-    public int getWriteTo() {
-        return writeTo;
+    public int getReadFrom() {
+        return readFrom;
+    }
+
+    /**
+     * @return The number of bytes that have been read, in total.
+     */
+    public long getTotalReadBytes() {
+        return getParts() * getPartSize() + getReadFrom();
+    }
+
+    @Override
+    public int read() throws IOException {
+        int b = fileInputStreams[readFrom].read();
+        readFrom += 1;
+        if(readFrom >= fileInputStreams.length) {
+            readFrom = 0;
+            partSize += 1;
+        }
+        return b;
+    }
+
+    @Override
+    public void close() throws IOException {
+        super.close();
+        for(FileInputStream fileInputStream : fileInputStreams) {
+            fileInputStream.close();
+        }
     }
 }

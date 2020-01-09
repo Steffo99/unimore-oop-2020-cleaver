@@ -1,25 +1,43 @@
 package eu.steffo.cleaver.logic.stream.input;
 
-import org.w3c.dom.Element;
-
 import java.io.*;
 
+/**
+ * A {@link ICleaverInputStream} that reads data from a series of files having a predefined size.
+ *
+ * Bytes are read from a file until {@link #maximumByteCount} bytes are read, then the program switches to the following file (.c2 if .c1 is full, .c3 if .c2
+ * is full, and so on).
+ */
 public class CleaverSplitFileInputStream extends InputStream implements ICleaverInputStream {
+    /**
+     * @see #getBaseFile()
+     */
     private final File baseFile;
+
+    /**
+     * The number of bytes that have already been read from the current file.
+     */
     private long currentByteCount;
-    private long maximumByteCount;
+
+    /**
+     * The number of bytes that should be read from a file before switching to the following one.
+     */
+    private final long maximumByteCount;
+
+    /**
+     * The number of files that have been opened so far.
+     */
     private int currentFileCount;
 
     /**
      * The {@link FileInputStream} this {@link InputStream} is currently reading from.
      */
-    protected FileInputStream currentFileInputStream;
+    private FileInputStream currentFileInputStream;
 
     /**
-     * Construct a SplitFileInputStream.
-     * It will read data from the files having the same name as the {@link #baseFile} and a *.cXX extension.
+     * Construct a CleaverSplitFileInputStream.
      *
-     * @param baseFile The {@link File} to be reconstructed.
+     * @param baseFile {@link #getBaseFile() Please see getBaseFile().}
      * @param maximumByteCount The number of bytes that should be read from a file before switching to the next one.
      */
     public CleaverSplitFileInputStream(File baseFile, long maximumByteCount) {
@@ -32,9 +50,9 @@ public class CleaverSplitFileInputStream extends InputStream implements ICleaver
 
     /**
      * Open the following file in the sequence, and update the {@link #currentFileInputStream}.
-     * @throws IOException If for some reason the program cannot open the file.
+     * @throws IOException If a problem is encountered while opening or closing a {@link FileInputStream}.
      */
-    protected void createNextFileInputStream() throws IOException {
+    private void createNextFileInputStream() throws IOException {
         if(currentFileInputStream != null) {
             currentFileInputStream.close();
         }
@@ -62,9 +80,10 @@ public class CleaverSplitFileInputStream extends InputStream implements ICleaver
     /**
      * Get the base {@link File}.
      *
-     * The stream will read from multiple files having a name constituted by the base {@link File} name and a *.cXX extension.
+     * The base file is the {@link File} that was split by a {@link eu.steffo.cleaver.logic.stream.output.CleaverSplitFileOutputStream} and will be now
+     * reconstructed by this object.
      *
-     * For example, if it is {@literal foo.txt}, the stream will read from {@literal foo.txt.c1}, {@literal foo.txt.c2}, and so on.
+     * The files read by this stream have the same name of the base file with the addition of a .cXX extension.
      *
      * @return The base file.
      */
@@ -80,14 +99,14 @@ public class CleaverSplitFileInputStream extends InputStream implements ICleaver
     }
 
     /**
-     * @return The number of bytes that should be read from a file before switching to the next one.
+     * @return The number of bytes that should be read from a file before switching to the following one.
      */
     public long getMaximumByteCount() {
         return maximumByteCount;
     }
 
     /**
-     * @return The number of files that have already been read.
+     * @return The number of files that have been opened so far.
      */
     public int getCurrentFileCount() {
         return currentFileCount;

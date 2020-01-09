@@ -20,6 +20,10 @@ It is being hosted on GitHub Pages.
 
 ### Progress
 
+#### 2020-01-09
+
+![](https://i.imgur.com/gBiY7eM.png)
+
 #### 2020-01-03
 
 ![](https://i.imgur.com/4ZUVo2v.png)

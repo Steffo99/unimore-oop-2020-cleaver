@@ -6,10 +6,13 @@ import eu.steffo.cleaver.logic.utils.SaltSerializer;
 import org.w3c.dom.Element;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * A {@link ICleaverStream} that is also a {@link InputStream} (a stream you can read bytes from).
+ * @see eu.steffo.cleaver.logic.job.StitchJob
+ */
 public interface ICleaverInputStream extends ICleaverStream {
     /**
      * Construct a ICleaverInputStream from a XML tag.

@@ -1,18 +1,11 @@
 package eu.steffo.cleaver.logic.job;
 
-import eu.steffo.cleaver.errors.ChpFileError;
-import eu.steffo.cleaver.errors.ProgrammingError;
-import eu.steffo.cleaver.logic.config.*;
+import eu.steffo.cleaver.errors.*;
+import eu.steffo.cleaver.logic.progress.*;
 import eu.steffo.cleaver.logic.stream.input.*;
-import eu.steffo.cleaver.logic.progress.ErrorProgress;
-import eu.steffo.cleaver.logic.progress.FinishedProgress;
-import eu.steffo.cleaver.logic.progress.Progress;
-import eu.steffo.cleaver.logic.progress.WorkingProgress;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -22,20 +15,35 @@ import java.io.*;
 
 
 /**
- * A {@link Job} that converts <i>chopped</i> (*.chp + *.cXX) files back into regular files.
+ * A {@link Job} to one or more <i>chopped</i> (*.chp + *.cXX) files back into the original file.
+ *
+ * The *.chp file is parsed to discover how to revert the chop process, then multiple {@link InputStream InputStreams} are created and the original file is
+ * recreated through a {@link FileOutputStream}.
  */
 public class StitchJob extends Job {
+    /**
+     * The password to be used in the decryption step(s), if there are any.
+     */
     private String cryptKey;
+
+    /**
+     * The {@link File folder} where the *.chp file is located.
+     *
+     * The original file will be placed in that folder when it is re-created.
+     */
     private File chpFolder;
+
+    /**
+     * The {@link Document} created by parsing the *.chp file as XML.
+     */
     private Document chpDocument;
 
     /**
      * Construct a StitchJob, specifying the *.chp file to import the settings from.
      * @param file The *.chp file.
-     * @throws ChpFileError If there's an error while parsing the *.chp file.
-     * @throws ProgrammingError It should never be thrown, but it may happen if there's a bug in the program...
+     * @throws ChpFileError If an error is encountered while parsing the *.chp file.
      */
-    public StitchJob(File file) throws ChpFileError, ProgrammingError {
+    public StitchJob(File file) throws ChpFileError {
         this(file, null, null);
     }
 
@@ -43,11 +51,9 @@ public class StitchJob extends Job {
      * Construct a StitchJob, specifying the *.chp file to import the settings from and an encryption key to use while decrypting the files.
      * @param file The *.chp file.
      * @param cryptKey The encryption key to use while decrypting the files.
-     * @throws ChpFileError If there's an error while parsing the *.chp file.
-     * @throws ProgrammingError It should never be thrown, but it may happen if there's a bug in the program...
-     * @see #StitchJob(File)
+     * @throws ChpFileError If an error is encountered while parsing the *.chp file.
      */
-    public StitchJob(File file, String cryptKey) throws ChpFileError, ProgrammingError {
+    public StitchJob(File file, String cryptKey) throws ChpFileError {
         this(file, cryptKey, null);
     }
 
@@ -56,25 +62,24 @@ public class StitchJob extends Job {
      * @param chpFile The *.chp file.
      * @param cryptKey The encryption key to use while decrypting the files.
      * @param updateTable The {@link Runnable} that should be invoked when {@link #setProgress(Progress)} is called.
-     * @throws ChpFileError If there's an error while parsing the *.chp file.
-     * @throws ProgrammingError It should never be thrown, but it may happen if there's a bug in the program...
+     * @throws ChpFileError If an error is encountered while parsing the *.chp file.
      * @see #StitchJob(File, String)
-     * @see Job#Job(Runnable)
      */
-    public StitchJob(File chpFile, String cryptKey, Runnable updateTable) throws ChpFileError, ProgrammingError {
+    public StitchJob(File chpFile, String cryptKey, Runnable updateTable) throws ChpFileError {
         super(updateTable);
         this.cryptKey = cryptKey;
         this.chpDocument = getChpFileDocument(chpFile);
         this.chpFolder = chpFile.getParentFile();
     }
 
+    //TODO: decide on a protection
+    private File getResultFile() {
+        return new File(chpFolder, chpDocument.getElementsByTagName("OriginalFile").item(0).getTextContent());
+    }
+
     @Override
     public String getTypeString() {
         return "Stitch";
-    }
-
-    public File getResultFile() {
-        return new File(chpFolder, chpDocument.getElementsByTagName("OriginalFile").item(0).getTextContent());
     }
 
     @Override
@@ -89,6 +94,7 @@ public class StitchJob extends Job {
 
         boolean arrow = false;
 
+        //Iterate over the elements of the document tree until the <OriginalFile> node is reached
         while(!element.getTagName().equals("OriginalFile")) {
 
             if(arrow) {
@@ -124,19 +130,18 @@ public class StitchJob extends Job {
     }
 
     /**
-     * Instantiate a new {@link Document} based on the contents of the passed file.
+     * Create a new {@link Document} based on the contents of the passed {@link File}.
      * @param chpFile The file to create a {@link Document} from.
      * @return The created {@link Document}.
      * @throws ChpFileError If the .chp does not exist, or is corrupt.
-     * @throws ProgrammingError It should never be thrown, but it may happen if there's a bug in the program...
      */
-    protected static Document getChpFileDocument(File chpFile) throws ChpFileError, ProgrammingError {
+    protected static Document getChpFileDocument(File chpFile) throws ChpFileError {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         try {
             builder = factory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            throw new ProgrammingError("Parser configuration error in the ChopJob.");
+            throw new ProgrammingError(e.toString());
         }
         Document doc;
         try {
@@ -149,7 +154,10 @@ public class StitchJob extends Job {
         return doc;
     }
 
-    private static final int BUFFER_SIZE = 16384;
+    /**
+     * The size of the buffer where bytes are read to before being written into the {@link OutputStream} (currently {@value} bytes).
+     */
+    private static final int BUFFER_SIZE = 8192;
 
     @Override
     public void run() {

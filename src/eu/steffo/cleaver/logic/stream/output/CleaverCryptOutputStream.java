@@ -18,8 +18,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-import java.util.Arrays;
 
+/**
+ * A {@link ICleaverOutputStream} that encrypts incoming data using a {@link Cipher} object.
+ */
 public class CleaverCryptOutputStream extends FilterOutputStream implements ICleaverOutputStream {
     private Cipher cipher;
     private byte[] salt;

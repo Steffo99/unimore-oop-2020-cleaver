@@ -1,6 +1,6 @@
 /**
  * The main package of the program.
- * It contains all the runnable functions (currently only {@link eu.steffo.cleaver.Main Main}), and all other packages.
+ * It contains the {@link eu.steffo.cleaver.Main} function and all other packages.
  *
  * @see eu.steffo.cleaver.logic
  * @see eu.steffo.cleaver.gui

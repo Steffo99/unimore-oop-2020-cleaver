@@ -2,8 +2,8 @@ package eu.steffo.cleaver.logic.job;
 
 import eu.steffo.cleaver.errors.*;
 import eu.steffo.cleaver.logic.config.*;
-import eu.steffo.cleaver.logic.stream.output.*;
 import eu.steffo.cleaver.logic.progress.*;
+import eu.steffo.cleaver.logic.stream.output.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -28,6 +28,8 @@ import org.w3c.dom.Element;
  *     <li><b>Split</b> (if {@link #splitConfig} is not {@code null})</li>
  *     <li>*.chp file creation</li>
  * </ol>
+ *
+ * @see StitchJob
  */
 public class ChopJob extends Job {
 
@@ -206,24 +208,23 @@ public class ChopJob extends Job {
         }
     }
 
+    /**
+     * The size of the buffer where bytes are read to before being written into the {@link OutputStream} (currently {@value} bytes).
+     */
+    private static final int BUFFER_SIZE = 8192;
+
     @Override
     public void run() {
         try {
             InputStream inputStream = new FileInputStream(fileToChop);
             OutputStream outputStream = createCryptOutputStream(createCompressOutputStream(createSplitOutputStream()));
 
-            //Pipe everything to the output
-            int bytesUntilNextUpdate = 2048;
             this.setProgress(new WorkingProgress());
 
-            int i;
-            while((i = inputStream.read()) != -1) {
-                outputStream.write(i);
-                bytesUntilNextUpdate -= 1;
-                if(bytesUntilNextUpdate <= 0) {
-                    this.setProgress(new WorkingProgress((float)(fileToChop.length() - inputStream.available()) / (float) fileToChop.length()));
-                    bytesUntilNextUpdate = 2048;
-                }
+            byte[] buffer = new byte[BUFFER_SIZE];
+            while(inputStream.read(buffer) != -1) {
+                outputStream.write(buffer);
+                this.setProgress(new WorkingProgress((float)(fileToChop.length() - inputStream.available()) / (float)fileToChop.length()));
             }
 
             inputStream.close();

@@ -1,106 +1,110 @@
 package eu.steffo.cleaver.logic.stream.input;
 
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
-import java.io.FilterInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
+import eu.steffo.cleaver.errors.ProgrammingError;
 
+import javax.crypto.*;
+import javax.crypto.spec.*;
+import java.io.*;
+import java.security.*;
+import java.security.spec.*;
+
+/**
+ * A {@link ICleaverInputStream} that decrypts incoming data using a {@link Cipher} object.
+ */
 public class CleaverCryptInputStream extends FilterInputStream implements ICleaverInputStream {
-    private Cipher cipher;
+    /**
+     * The {@link Cipher} to use to decrypt the data received in input.
+     */
+    private final Cipher cipher;
 
     /**
      * The algorithm used for the encryption (<a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard">Advanced Encryption Standard</a>).
      */
-    private final String encryptionAlgorithm = "AES";
+    private static final String ENCRYPTION_ALGORITHM = "AES";
 
     /**
      * The mode of operation used for the encryption (<a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_Feedback_(CFB)">Cipher FeedBack</a> with 8-bit blocks).
      */
-    private final String modeOfOperation = "CFB8";
+    private static final String MODE_OF_OPERATION = "CFB8";
 
     /**
-     * The padding standard used for the encryption (none, as there's no need for it with 8-bit blocks).
+     * The padding standard used for the encryption (none, as there's no need for it when using 8-bit blocks).
      */
-    private final String padding = "NoPadding";
-
-    /**
-     * The size in bytes of the <a href="https://en.wikipedia.org/wiki/Salt_(cryptography)">salt</a>.
-     */
-    private final int saltSize = 8;
+    private static final String PADDING = "NoPadding";
 
     /**
      * The name of the key derivation algorithm to be used (<a href="https://en.wikipedia.org/wiki/PBKDF2">Password-Based Key Derivation Function 2</a> with <a href="https://en.wikipedia.org/wiki/HMAC">HMAC</a>-<a href="https://it.wikipedia.org/wiki/Secure_Hash_Algorithm">SHA512</a>).
      */
-    private final String keyDerivationAlgorithm = "PBKDF2WithHmacSHA512";
+    private static final String KEY_DERIVATION_ALGORITHM = "PBKDF2WithHmacSHA512";
 
     /**
-     * The iteration count for the {@link #keyDerivationAlgorithm}.
+     * The iteration count for the {@link #KEY_DERIVATION_ALGORITHM}.
      */
-    private final int keyIterationCount = 65535;
+    private static final int KEY_ITERATION_COUNT = 65535;
 
     /**
-     * The length in bits of the key to be generated with the {@link #keyDerivationAlgorithm}.
+     * The length in bits of the key to be generated with the {@link #KEY_DERIVATION_ALGORITHM}.
      */
-    private final int keyLength = 256;
+    private static final int KEY_LENGTH = 256;
 
-    /**
-     * The size in bytes of the initialization vector.
-     */
-    private final int ivSize = 16;
     /**
      * @return The full transformation string as required by {@link Cipher#getInstance(String)}.
      */
-    public String getTransformationString() {
-        return String.format("%s/%s/%s", encryptionAlgorithm, modeOfOperation, padding);
+    private static String getTransformationString() {
+        return String.format("%s/%s/%s", ENCRYPTION_ALGORITHM, MODE_OF_OPERATION, PADDING);
     }
 
     /**
-     * Generate a key starting from a character array.
-     * @throws NoSuchAlgorithmException If the {@link #keyDerivationAlgorithm} is invalid.
+     * Generate a AES key from a password and a salt.
+     * @throws NoSuchAlgorithmException If the {@link #KEY_DERIVATION_ALGORITHM} is invalid.
      * @throws InvalidKeySpecException If the generated {@link KeySpec} is invalid.
      */
-    private SecretKey generatePasswordKey(char[] key, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        KeySpec spec = new PBEKeySpec(key, salt, keyIterationCount, keyLength);
-        SecretKeyFactory factory = SecretKeyFactory.getInstance(keyDerivationAlgorithm);
+    private static SecretKey generatePasswordKey(char[] password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        KeySpec spec = new PBEKeySpec(password, salt, KEY_ITERATION_COUNT, KEY_LENGTH);
+        SecretKeyFactory factory = SecretKeyFactory.getInstance(KEY_DERIVATION_ALGORITHM);
         return factory.generateSecret(spec);
     }
 
     /**
-     * Create and initialize the {@link Cipher} {@link #cipher} to be used by the CleaverCryptOutputStream.
-     * @param key The string to be used in the {@link Cipher} as encryption key.
-     * @throws NoSuchPaddingException If the {@link #padding} is invalid.
-     * @throws NoSuchAlgorithmException If the {@link #encryptionAlgorithm} is invalid.
+     * Create and initialize the {@link Cipher} to be used by the CleaverCryptOutputStream.
+     * @param password The string to be used in the {@link Cipher} as encryption key.
+     * @return The initialized {@link Cipher}.
+     * @throws NoSuchPaddingException If the {@link #PADDING} is invalid.
+     * @throws NoSuchAlgorithmException If the {@link #ENCRYPTION_ALGORITHM} is invalid.
      * @throws InvalidKeySpecException If the generated {@link KeySpec} is invalid.
      */
-    private void initCipher(char[] key, byte[] salt, byte[] iv) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidAlgorithmParameterException, InvalidKeyException {
+    private static Cipher initCipher(char[] password, byte[] salt, byte[] iv) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidAlgorithmParameterException, InvalidKeyException {
         //Setup the cipher object
-        cipher = Cipher.getInstance(getTransformationString());
+        Cipher cipher = Cipher.getInstance(getTransformationString());
 
         //"Convert" the secret key to a AES secret key
-        SecretKey aes = new SecretKeySpec(generatePasswordKey(key, salt).getEncoded(), encryptionAlgorithm);
+        SecretKey aes = new SecretKeySpec(generatePasswordKey(password, salt).getEncoded(), ENCRYPTION_ALGORITHM);
 
         //Init the cipher instance
         cipher.init(Cipher.DECRYPT_MODE, aes, new IvParameterSpec(iv));
+
+        return cipher;
     }
 
-    protected CleaverCryptInputStream(InputStream in, char[] key, byte[] salt, byte[] iv) {
+    /**
+     * Create a new CleaverCryptInputStream wrapping another {@link InputStream}.
+     * @param in The {@link InputStream} to wrap (it must implement {@link ICleaverInputStream}!).
+     * @param password The password to decrypt the incoming data with.
+     * @param salt The salt used to generate the AES key from the password. Should be 8 bytes long.
+     * @param iv The initialization vector passed to the {@link Cipher} before starting the decryption. Should be 16 bytes long.
+     */
+    public CleaverCryptInputStream(InputStream in, char[] password, byte[] salt, byte[] iv) {
         super(in);
+
+        if(!(in instanceof ICleaverInputStream)) {
+            throw new IllegalArgumentException("The InputStream passed to the CleaverDeflateInputStream must implement ICleaverInputStream.");
+        }
+
         try {
-            initCipher(key, salt, iv);
+            cipher = initCipher(password, salt, iv);
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeySpecException | InvalidAlgorithmParameterException | InvalidKeyException e) {
             //This should never happen...
-            e.printStackTrace();
+            throw new ProgrammingError(e.toString());
         }
     }
 

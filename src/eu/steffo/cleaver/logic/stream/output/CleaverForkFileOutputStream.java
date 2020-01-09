@@ -7,20 +7,36 @@ import org.w3c.dom.Element;
 import java.io.*;
 
 /**
- * A custom {@link OutputStream} that writes the bytes received in input in multiple files with a progressively increasing number (.c1, .c2, .c3, and so on).
+ * A {@link ICleaverOutputStream} that reads split data from a specific number of files having the same size.
  *
  * Bytes are written one at a time to the files in a round-robin format until the stream is exausted.
  */
 public class CleaverForkFileOutputStream extends OutputStream implements ICleaverOutputStream {
+    /**
+     * @see #getBaseFile()
+     */
     private final File baseFile;
+
+    /**
+     * The {@link FileOutputStream} where bytes are written to.
+     */
     private FileOutputStream[] fileOutputStreams;
+
+    /**
+     * The index of the next {@link #fileOutputStreams FileInputStream} to write a byte to.
+     */
     private int writeTo;
+
+    /**
+     * The number of bytes that have been written to a single part.
+     */
     private long partSize;
 
     /**
      * Construct a CleaverForkFileOutputStream.
-     * @param baseFile The name of the files without the extension. If it is {@literal example}, the created files will be {@literal example.c1}, {@literal example.c2}, and so on.
+     * @param baseFile {@link #getBaseFile() Please see getBaseFile().}
      * @param parts The number of parts to be created.
+     * @throws FileNotFoundException If a file can't be created.
      */
     public CleaverForkFileOutputStream(File baseFile, int parts) throws FileNotFoundException {
         this.baseFile = baseFile;
@@ -33,49 +49,13 @@ public class CleaverForkFileOutputStream extends OutputStream implements ICleave
         this.partSize = 1;
     }
 
-    @Override
-    public Element toElement(Document doc) {
-        Element element = doc.createElement("Fork");
-
-        Element fileElement = doc.createElement("OriginalFile");
-        fileElement.setTextContent(baseFile.getName());
-        element.appendChild(fileElement);
-
-        Attr partSizeAttr = doc.createAttribute("part-size");
-        partSizeAttr.setValue(Long.toString(partSize));
-        element.setAttributeNode(partSizeAttr);
-
-        Attr partCountAttr = doc.createAttribute("parts");
-        partCountAttr.setValue(Long.toString(fileOutputStreams.length));
-        element.setAttributeNode(partCountAttr);
-
-        return element;
-    }
-
-    @Override
-    public void write(int b) throws IOException {
-        fileOutputStreams[writeTo].write(b);
-        writeTo += 1;
-        if(writeTo >= fileOutputStreams.length) {
-            writeTo = 0;
-            partSize += 1;
-        }
-    }
-
-    @Override
-    public void close() throws IOException {
-        super.close();
-        for(FileOutputStream fileOutputStream : fileOutputStreams) {
-            fileOutputStream.close();
-        }
-    }
-
     /**
      * Get the base {@link File}.
      *
-     * The base {@link File} gives the name to all generated files, including the file parts (*.cXX) and the reconstructed file.
+     * The base file is the {@link File} will be reconstructed after reversing the Fork operation with a
+     * {@link eu.steffo.cleaver.logic.stream.input.CleaverForkFileInputStream}.
      *
-     * For example, if it is {@literal foo.txt}, the created files will be {@literal foo.txt.c1}, {@literal foo.txt.c2}, and so on.
+     * The files created by this stream will have the same name of the base file, with the addition of a .cXX extension.
      *
      * @return The base file.
      */
@@ -102,5 +82,49 @@ public class CleaverForkFileOutputStream extends OutputStream implements ICleave
      */
     public int getWriteTo() {
         return writeTo;
+    }
+
+    /**
+     * @return The number of bytes that have been written, in total.
+     */
+    public long getTotalReadBytes() {
+        return getParts() * getPartSize() + getWriteTo();
+    }
+
+    @Override
+    public void write(int b) throws IOException {
+        fileOutputStreams[writeTo].write(b);
+        writeTo += 1;
+        if(writeTo >= fileOutputStreams.length) {
+            writeTo = 0;
+            partSize += 1;
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        super.close();
+        for(FileOutputStream fileOutputStream : fileOutputStreams) {
+            fileOutputStream.close();
+        }
+    }
+
+    @Override
+    public Element toElement(Document doc) {
+        Element element = doc.createElement("Fork");
+
+        Element fileElement = doc.createElement("OriginalFile");
+        fileElement.setTextContent(baseFile.getName());
+        element.appendChild(fileElement);
+
+        Attr partSizeAttr = doc.createAttribute("part-size");
+        partSizeAttr.setValue(Long.toString(partSize));
+        element.setAttributeNode(partSizeAttr);
+
+        Attr partCountAttr = doc.createAttribute("parts");
+        partCountAttr.setValue(Long.toString(fileOutputStreams.length));
+        element.setAttributeNode(partCountAttr);
+
+        return element;
     }
 }

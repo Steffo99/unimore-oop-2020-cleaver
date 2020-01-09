@@ -10,25 +10,40 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * A custom {@link OutputStream} that writes the bytes received in input in multiple files with a progressively increasing number (.c1, .c2, .c3, and so on).
+ * A {@link ICleaverOutputStream} that writes data to a series of files having a predefined size.
  *
- * Bytes are written to a file until its length reaches {@link #maximumByteCount}, then the program switches to the following file (.c2 if .c1 is full, .c3 if .c2 is full, and so on).
+ * Bytes are written to a file until its length reaches {@link #maximumByteCount}, then the program switches to the following file (.c2 if .c1 is full, .c3 if
+ * .c2 is full, and so on).
  */
 public class CleaverSplitFileOutputStream extends OutputStream implements ICleaverOutputStream {
+    /**
+     * @see #getBaseFile()
+     */
     private final File baseFile;
+
+    /**
+     * The number of bytes that have already been written to the current file.
+     */
     private long currentByteCount;
-    private long maximumByteCount;
+
+    /**
+     * The number of bytes that should be written to a file before switching to the following one.
+     */
+    private final long maximumByteCount;
+
+    /**
+     * The number of files that have been opened so far.
+     */
     private int currentFileCount;
 
     /**
      * The {@link FileOutputStream} this {@link OutputStream} is currently writing to.
      */
-    protected FileOutputStream currentFileOutputStream;
+    private FileOutputStream currentFileOutputStream;
 
     /**
      * Construct a CleaverSplitFileOutputStream.
-     * @param baseFile The {@link File} that will be reconstructed after reversing the Split operation.
-     *                 The split files will have the same name with the addition of a .cXX extension.
+     * @param baseFile
      * @param maximumByteCount The number of bytes that should be written to a file before switching to the next one.
      */
     public CleaverSplitFileOutputStream(File baseFile, long maximumByteCount) {
@@ -43,7 +58,7 @@ public class CleaverSplitFileOutputStream extends OutputStream implements ICleav
      * Create the following file in the sequence, and update the {@link #currentFileOutputStream}.
      * @throws IOException If for some reason the program cannot create the file.
      */
-    protected void createNextFileOutputStream() throws IOException {
+    private void createNextFileOutputStream() throws IOException {
         if(currentFileOutputStream != null) {
             currentFileOutputStream.close();
         }
@@ -71,9 +86,10 @@ public class CleaverSplitFileOutputStream extends OutputStream implements ICleav
     /**
      * Get the base {@link File}.
      *
-     * The base {@link File} is the one that gives the name to all generated files, including the file parts (*.cXX) and the reconstructed file.
+     * The base file is the {@link File} will be reconstructed after reversing the Split operation with a
+     * {@link eu.steffo.cleaver.logic.stream.input.CleaverSplitFileInputStream}.
      *
-     * For example, if it is {@literal foo.txt}, the created files will be {@literal foo.txt.c1}, {@literal foo.txt.c2}, and so on.
+     * The files created by this stream will have the same name of the base file, with the addition of a .cXX extension.
      *
      * @return The base file.
      */

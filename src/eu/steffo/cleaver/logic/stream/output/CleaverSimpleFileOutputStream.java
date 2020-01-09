@@ -9,13 +9,21 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 /**
- * A custom {@link OutputStream} that writes the bytes received in input to a single file with a *.c0 extension.
+ * A {@link ICleaverOutputStream} that writes data to a single file with a *.c0 extension.
  *
  * @see FileOutputStream
  */
 public class CleaverSimpleFileOutputStream extends FileOutputStream implements ICleaverOutputStream {
+    /**
+     * The base (the {@link File} without *.c0 extension) of the file to write to.
+     */
     private final File baseFile;
 
+    /**
+     * Create a new CleaverSimpleFileOutputStream.
+     * @param baseFile The base (the {@link File} without *.c0 extension) of the file to write to.
+     * @throws FileNotFoundException If a required file isn't found.
+     */
     public CleaverSimpleFileOutputStream(File baseFile) throws FileNotFoundException {
         super(String.format("%s.c0", baseFile));
         this.baseFile = baseFile;
@@ -33,11 +41,7 @@ public class CleaverSimpleFileOutputStream extends FileOutputStream implements I
     }
 
     /**
-     * Get the base {@link File}.
-     *
-     * The base {@link File} is the one that gives the name to all generated files, including the chopped file (*.c0) and the reconstructed file.
-     *
-     * For example, if it is {@literal foo.txt}, the created file will be {@literal foo.txt.c0}.
+     * @return The base (the {@link File} without *.c0 extension) of the file to write to.
      */
     public File getBaseFile() {
         return baseFile;
