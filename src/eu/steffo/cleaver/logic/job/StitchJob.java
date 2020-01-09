@@ -149,7 +149,7 @@ public class StitchJob extends Job {
         return doc;
     }
 
-    private static final int UPDATE_EVERY_BYTES = 16000;
+    private static final int BUFFER_SIZE = 16384;
 
     @Override
     public void run() {
@@ -161,18 +161,14 @@ public class StitchJob extends Job {
             InputStream inputStream = ICleaverInputStream.fromElement(cleaverNode, chpFolder, cryptKey);
             OutputStream outputStream = new FileOutputStream(resultFile);
 
-            //Pipe everything to the output
-            int bytesUntilNextUpdate = UPDATE_EVERY_BYTES;
+            //Pipe everything to the output, in chunks
             this.setProgress(new WorkingProgress());
 
-            int i;
-            while((i = inputStream.read()) != -1) {
-                outputStream.write(i);
-                bytesUntilNextUpdate -= 1;
-                if(bytesUntilNextUpdate <= 0) {
-                    this.setProgress(new WorkingProgress((float)(resultFile.length() - inputStream.available()) / (float)resultFile.length()));
-                    bytesUntilNextUpdate = UPDATE_EVERY_BYTES;
-                }
+            byte[] buffer = new byte[BUFFER_SIZE];
+            //Loop until the first byte in the buffer is -1
+            while(inputStream.read(buffer) != -1) {
+                outputStream.write(buffer);
+                this.setProgress(new WorkingProgress((float)(resultFile.length() - inputStream.available()) / (float)resultFile.length()));
             }
 
             inputStream.close();
