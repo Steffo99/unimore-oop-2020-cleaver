@@ -13,6 +13,7 @@ public class CleaverDeflateInputStream extends InflaterInputStream implements IC
     /**
      * Construct a new CleaverDeflateInputStream wrapping the passed {@link InputStream} and ensuring it {@link InputStream} implements
      * {@link ICleaverInputStream}.
+     * @param in The {@link InputStream} that should be wrapped by this CleaverDeflateInputStream.
      * @see InflaterInputStream#InflaterInputStream(InputStream)
      */
     public CleaverDeflateInputStream(InputStream in) {

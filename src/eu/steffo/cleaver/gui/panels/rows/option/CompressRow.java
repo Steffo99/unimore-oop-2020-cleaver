@@ -8,6 +8,8 @@ import javax.swing.*;
 /**
  * A {@link OptionRow} allowing the {@link DeflateConfig configuration of the compress step} of the file chop process.
  *
+ * <p><img src="doc-files/compressrow.png" alt=""></p>
+ *
  * @see eu.steffo.cleaver.gui.panels.ChopPanel
  */
 public class CompressRow extends OptionRow {

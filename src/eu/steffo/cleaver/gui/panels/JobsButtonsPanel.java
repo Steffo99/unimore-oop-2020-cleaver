@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
  * A panel that holds the buttons to perform actions on jobs.
  * Currently, the actions are <b>Delete selected jobs</b> and <b>Start incomplete jobs</b>.
  * The buttons are displayed <i>horizontally</i> side-by-side.
+ *
+ * <p><img src="doc-files/jobsbuttonspanel.png" alt=""></p>
  */
 public class JobsButtonsPanel extends JPanel {
 

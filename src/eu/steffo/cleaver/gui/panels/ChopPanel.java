@@ -15,6 +15,8 @@ import java.util.ArrayList;
 
 /**
  * The {@link CreateJobPanel} allowing the creation of {@link ChopJob ChopJobs}.
+ *
+ * <p><img src="doc-files/choppanel.png" alt=""></p>
  */
 public class ChopPanel extends CreateJobPanel {
     /**

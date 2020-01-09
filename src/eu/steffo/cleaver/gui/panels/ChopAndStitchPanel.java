@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 /**
  * This panel displays a {@link ChopPanel} and a {@link StitchPanel} <i>horizontally</i> side-by-side.
+ *
+ * <p><img src="doc-files/chopandstitchpanel.png" alt=""></p>
  */
 public class ChopAndStitchPanel extends JPanel {
     /**

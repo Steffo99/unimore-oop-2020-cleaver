@@ -19,6 +19,10 @@ public interface ICleaverInputStream extends ICleaverStream {
      * @param element The XML tag.
      * @param chpFileDirectory The directory in which the *.chp file is located.
      * @param key The key to use in case &lt;Crypt&gt; tags are present.
+     * @throws ChpFileError If an unknown tag is encountered.
+     * @throws IOException If something goes wrong while opening the streams ({@link java.io.FileNotFoundException missing files}, insufficient permissions,
+     *                     ...)
+     * @return The created ICleaverInputStream.
      */
     static InputStream fromElement(Element element, File chpFileDirectory, String key) throws ChpFileError, IOException {
         String tagName = element.getTagName();

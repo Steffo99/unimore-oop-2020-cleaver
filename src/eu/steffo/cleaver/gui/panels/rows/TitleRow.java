@@ -4,6 +4,9 @@ import javax.swing.*;
 
 /**
  * A {@link Row} containing a label, to be used as a title.
+ *
+ * <p><img src="doc-files/titlerow.png" alt=""></p>
+ *
  * @see eu.steffo.cleaver.gui.panels.CreateJobPanel
  */
 public class TitleRow extends Row {

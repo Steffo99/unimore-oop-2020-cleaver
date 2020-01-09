@@ -15,6 +15,8 @@ import java.util.ArrayList;
 
 /**
  * The {@link CreateJobPanel} allowing the creation of {@link StitchJob StitchJobs}.
+ *
+ * <p><img src="doc-files/stitchpanel.png" alt=""></p>
  */
 public class StitchPanel extends CreateJobPanel {
     /**

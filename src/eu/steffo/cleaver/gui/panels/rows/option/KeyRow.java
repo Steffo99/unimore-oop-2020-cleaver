@@ -9,6 +9,8 @@ import javax.swing.*;
  *
  * This configuration is used only if the selected *.chp file specifies that the *.cXX are encrypted.
  *
+ * <p><img src="doc-files/keyrow.png" alt=""></p>
+ *
  * @see eu.steffo.cleaver.gui.panels.StitchPanel
  */
 public class KeyRow extends OptionRow {

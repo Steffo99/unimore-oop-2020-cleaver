@@ -12,6 +12,8 @@ import javax.swing.event.DocumentListener;
 /**
  * A {@link OptionRow} allowing the {@link IConfig configuration of the split step} of the file chop process.
  *
+ * <p><img src="doc-files/splitrow.png" alt=""></p>
+ *
  * @see eu.steffo.cleaver.gui.panels.ChopPanel
  */
 public class SplitRow extends OptionRow {

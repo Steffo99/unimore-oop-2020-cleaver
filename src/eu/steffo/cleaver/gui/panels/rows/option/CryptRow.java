@@ -8,6 +8,8 @@ import javax.swing.*;
 /**
  * A {@link OptionRow} allowing the {@link PasswordConfig configuration of the crypt step} of the file chop process.
  *
+ * <p><img src="doc-files/cryptrow.png" alt=""></p>
+ *
  * @see eu.steffo.cleaver.gui.panels.ChopPanel
  */
 public class CryptRow extends OptionRow {

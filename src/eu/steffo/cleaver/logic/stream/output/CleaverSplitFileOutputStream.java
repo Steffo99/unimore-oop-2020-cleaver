@@ -43,7 +43,7 @@ public class CleaverSplitFileOutputStream extends OutputStream implements ICleav
 
     /**
      * Construct a CleaverSplitFileOutputStream.
-     * @param baseFile
+     * @param baseFile {@link #getBaseFile() Please see getBaseFile().}
      * @param maximumByteCount The number of bytes that should be written to a file before switching to the next one.
      */
     public CleaverSplitFileOutputStream(File baseFile, long maximumByteCount) {

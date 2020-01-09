@@ -14,6 +14,8 @@ import javax.swing.*;
 /**
  * A class providing a GUI for Cleaver made with {@link javax.swing}.
  * It uses a <b>vertical</b> {@link BoxLayout} ({@link BoxLayout#PAGE_AXIS}): the panels added to it are stacked vertically, as if it was a list.
+ *
+ * <p><img src="doc-files/cleaverframe.png" alt=""></p>
  */
 public class CleaverFrame extends JFrame {
     /**

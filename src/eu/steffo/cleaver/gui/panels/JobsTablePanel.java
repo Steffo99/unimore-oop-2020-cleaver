@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 /**
  * The {@link JPanel Panel} containing the jobs {@link JTable Table}.
+ *
+ * <p><img src="doc-files/jobstablepanel.png" alt=""></p>
  */
 public class JobsTablePanel extends JPanel {
     /**

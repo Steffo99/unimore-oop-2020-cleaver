@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
  *
  * The button click event can be handled with a custom {@link ActionListener}, specified in the constructor.
  *
+ * <p><img src="doc-files/createjobbuttonrow.png" alt=""></p>
+ *
  * @see eu.steffo.cleaver.gui.panels.CreateJobPanel
  */
 public class CreateJobButtonRow extends Row {

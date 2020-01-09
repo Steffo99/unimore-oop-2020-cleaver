@@ -13,7 +13,8 @@ import java.util.zip.DeflaterOutputStream;
  */
 public class CleaverDeflateOutputStream extends DeflaterOutputStream implements ICleaverOutputStream {
     /**
-     * Construct a new CleaverDeflateOutputStream and ensure the passed {@link OutputStream} implements {@link ICleaverOutputStream}.
+     * Construct a new CleaverDeflateOutputStream and ensure the wrapped {@link OutputStream} implements {@link ICleaverOutputStream}.
+     * @param out The {@link OutputStream} this stream should wrap.
      * @see DeflaterOutputStream#DeflaterOutputStream(OutputStream)
      */
     public CleaverDeflateOutputStream(OutputStream out) {

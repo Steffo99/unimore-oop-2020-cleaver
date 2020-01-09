@@ -7,6 +7,9 @@ import java.io.File;
 
 /**
  * A {@link Row} allowing for the selection of one or multiple files through a {@link JFileChooser}.
+ *
+ * <p><img src="doc-files/fileselectrow.png" alt=""></p>
+ *
  * @see eu.steffo.cleaver.gui.panels.CreateJobPanel
  */
 public class FileSelectRow extends Row {

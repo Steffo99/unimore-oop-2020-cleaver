@@ -56,8 +56,11 @@ public class CleaverCryptInputStream extends FilterInputStream implements ICleav
 
     /**
      * Generate a AES key from a password and a salt.
+     * @param password The password to generate a key from.
+     * @param salt The salt to use when generating the key.
      * @throws NoSuchAlgorithmException If the {@link #KEY_DERIVATION_ALGORITHM} is invalid.
      * @throws InvalidKeySpecException If the generated {@link KeySpec} is invalid.
+     * @return The generated AES {@link SecretKey}.
      */
     private static SecretKey generatePasswordKey(char[] password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
         KeySpec spec = new PBEKeySpec(password, salt, KEY_ITERATION_COUNT, KEY_LENGTH);
@@ -68,20 +71,38 @@ public class CleaverCryptInputStream extends FilterInputStream implements ICleav
     /**
      * Create and initialize the {@link Cipher} to be used by the CleaverCryptOutputStream.
      * @param password The string to be used in the {@link Cipher} as encryption key.
+     * @param salt The salt to use when generating the key.
+     * @param iv The initialization vector to use when initializing the {@link Cipher}.
      * @return The initialized {@link Cipher}.
-     * @throws NoSuchPaddingException If the {@link #PADDING} is invalid.
-     * @throws NoSuchAlgorithmException If the {@link #ENCRYPTION_ALGORITHM} is invalid.
-     * @throws InvalidKeySpecException If the generated {@link KeySpec} is invalid.
+     * @throws ProgrammingError If something goes wrong while preparing the {@link Cipher}. (It should never happen.)
      */
-    private static Cipher initCipher(char[] password, byte[] salt, byte[] iv) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidAlgorithmParameterException, InvalidKeyException {
+    private static Cipher initCipher(char[] password, byte[] salt, byte[] iv) {
         //Setup the cipher object
-        Cipher cipher = Cipher.getInstance(getTransformationString());
+        Cipher cipher;
+        try {
+            cipher = Cipher.getInstance(getTransformationString());
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+
+            //Should never happen
+            throw new ProgrammingError(e.toString());
+        }
 
         //"Convert" the secret key to a AES secret key
-        SecretKey aes = new SecretKeySpec(generatePasswordKey(password, salt).getEncoded(), ENCRYPTION_ALGORITHM);
+        SecretKey aes;
+        try {
+            aes = new SecretKeySpec(generatePasswordKey(password, salt).getEncoded(), ENCRYPTION_ALGORITHM);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            //Should never happen
+            throw new ProgrammingError(e.toString());
+        }
 
         //Init the cipher instance
-        cipher.init(Cipher.DECRYPT_MODE, aes, new IvParameterSpec(iv));
+        try {
+            cipher.init(Cipher.DECRYPT_MODE, aes, new IvParameterSpec(iv));
+        } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
+            //Should never happen
+            throw new ProgrammingError(e.toString());
+        }
 
         return cipher;
     }
@@ -100,12 +121,7 @@ public class CleaverCryptInputStream extends FilterInputStream implements ICleav
             throw new IllegalArgumentException("The InputStream passed to the CleaverDeflateInputStream must implement ICleaverInputStream.");
         }
 
-        try {
-            cipher = initCipher(password, salt, iv);
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeySpecException | InvalidAlgorithmParameterException | InvalidKeyException e) {
-            //This should never happen...
-            throw new ProgrammingError(e.toString());
-        }
+        cipher = initCipher(password, salt, iv);
     }
 
     @Override

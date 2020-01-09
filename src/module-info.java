@@ -2,6 +2,10 @@
  * A file compression, encryption and splitting utility in Java.
  *
  * It includes a easy to use {@link javax.swing} GUI.
+ *
+ * <p><img src="doc-files/main.png" alt=""></p>
+ *
+ * @author Stefano Pigozzi
  */
 open module eu.steffo.cleaver {
     requires java.desktop;
