@@ -1,62 +1,86 @@
 package eu.steffo.cleaver.logic.job;
 
-import eu.steffo.cleaver.errors.ProgrammingError;
+import eu.steffo.cleaver.errors.*;
 import eu.steffo.cleaver.logic.config.*;
 import eu.steffo.cleaver.logic.stream.output.*;
-import eu.steffo.cleaver.logic.progress.ErrorProgress;
-import eu.steffo.cleaver.logic.progress.FinishedProgress;
-import eu.steffo.cleaver.logic.progress.Progress;
-import eu.steffo.cleaver.logic.progress.WorkingProgress;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import eu.steffo.cleaver.logic.progress.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
- * A {@link Job} that converts regular files into <i>chopped</i> (*.chp + *.cXX) files.
+ * A {@link Job} to convert a file into one or more <i>chopped</i> (*.chp + *.cXX) files.
+ *
+ * The conversion is done in steps, which may be skipped if the required configuration is {@code null}:
+ * <ol>
+ *     <li><b>Compress</b> (if {@link #compressConfig} is not {@code null})</li>
+ *     <li><b>Crypt</b> (if {@link #cryptConfig} is not {@code null})</li>
+ *     <li><b>Split</b> (if {@link #splitConfig} is not {@code null})</li>
+ *     <li>*.chp file creation</li>
+ * </ol>
  */
 public class ChopJob extends Job {
 
-    private final File file;
-    private final ISplitConfig splitConfig;
+    /**
+     * The file to <i>chop</i>.
+     */
+    private final File fileToChop;
+
+    /**
+     * The {@link IConfig} for the <b>Crypt</b> step.
+     */
     private final ICryptConfig cryptConfig;
+
+    /**
+     * The {@link IConfig} for the <b>Compress</b> step.
+     */
     private final ICompressConfig compressConfig;
+
+
+    /**
+     * The {@link IConfig} for the <b>Split</b> step.
+     */
+    private final ISplitConfig splitConfig;
 
     /**
      * Create a new ChopJob (with progress updates support).
-     * @param file The file to be chopped.
-     * @param splitConfig The configuration for the Split step.
-     * @param cryptConfig The configuration for the Crypt step.
-     * @param compressConfig The configuration for the Compress step.
-     * @param onProgressChange A {@link Runnable} that should be invoked when {@link #setProgress(Progress)} is called.
+     * @param fileToChop The file to <i>chop</i>.
+     * @param compressConfig The {@link IConfig} for the <b>Compress</b> step.
+     * @param cryptConfig The {@link IConfig} for the <b>Crypt</b> step.
+     * @param splitConfig The {@link IConfig} for the <b>Split</b> step.
+     * @param onProgressChange  A {@link Runnable} that will be invoked on the GUI {@link Thread}
+     *                          (with {@link javax.swing.SwingUtilities#invokeLater(Runnable)}) every time {@link #setProgress(Progress)} is called.
      * @see Job#Job(Runnable)
      */
-    public ChopJob(File file, ISplitConfig splitConfig, ICryptConfig cryptConfig, ICompressConfig compressConfig, Runnable onProgressChange) {
+    public ChopJob(File fileToChop, ICompressConfig compressConfig, ICryptConfig cryptConfig, ISplitConfig splitConfig, Runnable onProgressChange) {
         super(onProgressChange);
-        this.file = file.getAbsoluteFile();
-        this.splitConfig = splitConfig;
-        this.cryptConfig = cryptConfig;
+        this.fileToChop = fileToChop.getAbsoluteFile();
         this.compressConfig = compressConfig;
+        this.cryptConfig = cryptConfig;
+        this.splitConfig = splitConfig;
     }
 
     /**
      * Create a new ChopJob (without progress updates support).
-     * @param file The file to be chopped.
-     * @param splitConfig The configuration for the Split step.
-     * @param cryptConfig The configuration for the Crypt step.
-     * @param compressConfig The configuration for the Compress step.
-     * @see ChopJob#ChopJob(File, ISplitConfig, ICryptConfig, ICompressConfig, Runnable)
+     * @param fileToChop The file to <i>chop</i>.
+     * @param compressConfig The {@link IConfig} for the <b>Compress</b> step.
+     * @param cryptConfig The {@link IConfig} for the <b>Crypt</b> step.
+     * @param splitConfig The {@link IConfig} for the <b>Split</b> step.
+     * @see ChopJob#ChopJob(File, ICompressConfig, ICryptConfig, ISplitConfig, Runnable)
      * @see Job#Job()
      */
-    public ChopJob(File file, ISplitConfig splitConfig, ICryptConfig cryptConfig, ICompressConfig compressConfig) {
-        this(file, splitConfig, cryptConfig, compressConfig, null);
+    public ChopJob(File fileToChop, ICompressConfig compressConfig, ICryptConfig cryptConfig, ISplitConfig splitConfig) {
+        this(fileToChop, compressConfig, cryptConfig, splitConfig, null);
     }
 
     @Override
@@ -66,11 +90,11 @@ public class ChopJob extends Job {
 
     @Override
     public String getFileString() {
-        return file.toString();
+        return fileToChop.toString();
     }
 
     @Override
-    public String getProcessString() {
+    public String getOperationsString() {
         StringBuilder s = new StringBuilder();
 
         if(compressConfig != null) {
@@ -94,41 +118,99 @@ public class ChopJob extends Job {
         return s.toString();
     }
 
+    /**
+     * Create a {@link OutputStream} based on the {@link #splitConfig} of this ChopJob.
+     *
+     * The {@link OutputStream} will be the <i>sink</i> of the stream chain created in {@link #run()}.
+     *
+     * @return The created {@link OutputStream}.
+     * @throws FileNotFoundException If one or more files cannot be created (for example, a directory with the same name is present).
+     * @see CleaverSplitFileOutputStream
+     * @see CleaverForkFileOutputStream
+     * @see CleaverSimpleFileOutputStream
+     */
+    protected OutputStream createSplitOutputStream() throws FileNotFoundException {
+        if(splitConfig instanceof SizeConfig) {
+            return new CleaverSplitFileOutputStream(fileToChop, ((SizeConfig)splitConfig).getSize());
+        }
+        else if(splitConfig instanceof PartsConfig) {
+            return new CleaverForkFileOutputStream(fileToChop, ((PartsConfig)splitConfig).getPartCount());
+        }
+        return new CleaverSimpleFileOutputStream(fileToChop);
+    }
+
+    /**
+     * Create a {@link OutputStream} based on the {@link #compressConfig} of this ChopJob.
+     *
+     * The created {@link OutputStream} will <i>wrap</i> the {@link OutputStream} passed as parameter, creating a chain of streams.
+     *
+     * @param sourceOutputStream The {@link OutputStream} that should be wrapped.
+     * @return The created {@link OutputStream}, wrapping the one that was passed as parameter.
+     * @see CleaverDeflateOutputStream
+     */
+    protected OutputStream createCompressOutputStream(OutputStream sourceOutputStream) {
+        if(compressConfig instanceof DeflateConfig) {
+            return new CleaverDeflateOutputStream(sourceOutputStream);
+        }
+        return sourceOutputStream;
+    }
+
+    /**
+     * Create a {@link OutputStream} based on the {@link #cryptConfig} of this ChopJob.
+     *
+     * The created {@link OutputStream} will <i>wrap</i> the {@link OutputStream} passed as parameter, creating a chain of streams.
+     *
+     * @param sourceOutputStream The {@link OutputStream} that should be wrapped.
+     * @return The created {@link OutputStream}, wrapping the one that was passed as parameter.
+     * @see CleaverCryptOutputStream
+     */
+    protected OutputStream createCryptOutputStream(OutputStream sourceOutputStream) {
+        if(cryptConfig instanceof PasswordConfig) {
+            return new CleaverCryptOutputStream(sourceOutputStream, ((PasswordConfig)cryptConfig).getPassword().toCharArray());
+        }
+        return sourceOutputStream;
+    }
+
+    /**
+     * Generate the element tree by calling the {@link ICleaverOutputStream#toElement(Document)} method on the passed {@link OutputStream} and by writing the
+     * results on a file with a {@link Transformer}.
+     * @param outputStream The {@link OutputStream} to create the *.chp file for.
+     */
+    protected void createChpFile(OutputStream outputStream) {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        try {
+            builder = factory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new ProgrammingError("Parser configuration error in the ChopJob.");
+        }
+        Document doc = builder.newDocument();
+        Element root = doc.createElement("Cleaver");
+        doc.appendChild(root);
+
+        root.appendChild(((ICleaverOutputStream)outputStream).toElement(doc));
+
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = null;
+        try {
+            transformer = transformerFactory.newTransformer();
+        } catch (TransformerConfigurationException e) {
+            throw new ProgrammingError(e.toString());
+        }
+        DOMSource source = new DOMSource(doc);
+        StreamResult result = new StreamResult(String.format("%s.chp", fileToChop.getAbsolutePath()));
+        try {
+            transformer.transform(source, result);
+        } catch (TransformerException e) {
+            throw new ProgrammingError(e.toString());
+        }
+    }
+
     @Override
     public void run() {
         try {
-            InputStream inputStream = new FileInputStream(file);
-            OutputStream outputStream;
-
-            if(splitConfig instanceof SizeConfig) {
-                outputStream = new CleaverSplitFileOutputStream(file, ((SizeConfig)splitConfig).getPartSize());
-            }
-            else if(splitConfig instanceof PartsConfig) {
-                outputStream = new CleaverForkFileOutputStream(file, ((PartsConfig)splitConfig).getPartCount());
-            }
-            else {
-                outputStream = new CleaverSimpleFileOutputStream(file);
-            }
-
-            if(compressConfig instanceof DeflateConfig) {
-                outputStream = new CleaverDeflateOutputStream(outputStream);
-            }
-
-            if(cryptConfig instanceof PasswordConfig) {
-                outputStream = new CleaverCryptOutputStream(outputStream, ((PasswordConfig)cryptConfig).getKey().toCharArray());
-            }
-
-            //Create the .chp file
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder;
-            try {
-                builder = factory.newDocumentBuilder();
-            } catch (ParserConfigurationException e) {
-                throw new ProgrammingError("Parser configuration error in the ChopJob.");
-            }
-            Document doc = builder.newDocument();
-            Element root = doc.createElement("Cleaver");
-            doc.appendChild(root);
+            InputStream inputStream = new FileInputStream(fileToChop);
+            OutputStream outputStream = createCryptOutputStream(createCompressOutputStream(createSplitOutputStream()));
 
             //Pipe everything to the output
             int bytesUntilNextUpdate = 2048;
@@ -139,7 +221,7 @@ public class ChopJob extends Job {
                 outputStream.write(i);
                 bytesUntilNextUpdate -= 1;
                 if(bytesUntilNextUpdate <= 0) {
-                    this.setProgress(new WorkingProgress((float)(file.length() - inputStream.available()) / (float)file.length()));
+                    this.setProgress(new WorkingProgress((float)(fileToChop.length() - inputStream.available()) / (float) fileToChop.length()));
                     bytesUntilNextUpdate = 2048;
                 }
             }
@@ -147,13 +229,7 @@ public class ChopJob extends Job {
             inputStream.close();
             outputStream.close();
 
-            root.appendChild(((ICleaverOutputStream)outputStream).toElement(doc));
-
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(String.format("%s.chp", file.getAbsolutePath()));
-            transformer.transform(source, result);
+            createChpFile(outputStream);
 
             this.setProgress(new FinishedProgress());
         } catch (Throwable e) {

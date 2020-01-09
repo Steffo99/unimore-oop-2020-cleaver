@@ -1,7 +1,7 @@
 package eu.steffo.cleaver.logic.config;
 
 /**
- * A {@link IConfig} for splitting a file in a specific number of parts.
+ * A {@link ISplitConfig} requesting the split of a file in a specific number of {@link #parts}.
  */
 public class PartsConfig implements ISplitConfig {
     /**
@@ -16,13 +16,16 @@ public class PartsConfig implements ISplitConfig {
     public PartsConfig(int parts) {
         this.parts = parts;
     }
+    /**
+     * @return The number of parts the file should be split in.
+     */
+    public int getPartCount() {
+        return parts;
+    }
 
     @Override
     public String toString() {
         return String.format("Split (%d parts)", this.parts);
     }
 
-    public int getPartCount() {
-        return parts;
-    }
 }

@@ -4,8 +4,6 @@ import eu.steffo.cleaver.logic.job.Job;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -54,7 +52,7 @@ public class JobsTablePanel extends JPanel {
             switch(columnIndex) {
                 case 0: return "Type";
                 case 1: return "File";
-                case 2: return "Process";
+                case 2: return "Operations";
                 case 3: return "Progress";
             }
             return null;
@@ -79,9 +77,9 @@ public class JobsTablePanel extends JPanel {
                 case 1:
                     return job.getFileString();
                 case 2:
-                    return job.getProcessString();
+                    return job.getOperationsString();
                 case 3:
-                    return job.getProgress().toString();
+                    return job.getProgressString();
             }
             return "Unknown";
         }

@@ -1,7 +1,7 @@
 package eu.steffo.cleaver.errors;
 
 /**
- * An error in the parsing of the {@literal .chp} file occoured.
+ * An error occoured during the parsing of a {@literal .chp} file.
  */
 public class ChpFileError extends Exception {
     public ChpFileError(String s) {

@@ -40,7 +40,7 @@ public class CleaverCryptInputStream extends FilterInputStream implements ICleav
     private final int saltSize = 8;
 
     /**
-     * The name of the key derivation algorithm to be used (<a href="https://en.wikipedia.org/wiki/PBKDF2">Password-Based Key Derivation Function 2</a> with <a href="https://en.wikipedia.org/wiki/HMAC">HMAC</a>-<a href="https://it.wikipedia.org/wiki/Secure_Hash_Algorithm>SHA512</a>).
+     * The name of the key derivation algorithm to be used (<a href="https://en.wikipedia.org/wiki/PBKDF2">Password-Based Key Derivation Function 2</a> with <a href="https://en.wikipedia.org/wiki/HMAC">HMAC</a>-<a href="https://it.wikipedia.org/wiki/Secure_Hash_Algorithm">SHA512</a>).
      */
     private final String keyDerivationAlgorithm = "PBKDF2WithHmacSHA512";
 

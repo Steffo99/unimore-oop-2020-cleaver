@@ -67,9 +67,8 @@ public class StitchPanel extends CreateJobPanel {
             try {
                 Job job = new StitchJob(file, keyOptionRow.getKey(), onProgressChange);
                 jobs.add(job);
-            } catch (ChpFileError ex) {
-                JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            } catch (ProgrammingError ex) {
+            } catch (Throwable ex) {
+                ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, ex.toString(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }

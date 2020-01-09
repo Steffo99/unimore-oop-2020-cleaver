@@ -1,24 +1,27 @@
 package eu.steffo.cleaver.logic.config;
 
 /**
- * A config for encrypting a file with an arbitrary length password.
+ * A {@link ICryptConfig} requesting the encryption of a file using a specific {@link #password}.
  */
 public class PasswordConfig implements ICryptConfig {
-    protected final String key;
+    /**
+     * The password to be used in the encryption.
+     */
+    private final String password;
 
     /**
-     * Construct a new CryptConfig with a specific encryption key.
-     * @param key The encryption key.
+     * Construct a new PasswordConfig with a specific password.
+     * @param key The password to be used in the encryption.
      */
     public PasswordConfig(String key) {
-        this.key = key;
+        this.password = key;
     }
 
     /**
-     * @return The encryption key.
+     * @return The password to be used in the encryption.
      */
-    public String getKey() {
-        return key;
+    public String getPassword() {
+        return password;
     }
 
     @Override

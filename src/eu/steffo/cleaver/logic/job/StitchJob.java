@@ -33,7 +33,7 @@ public class StitchJob extends Job {
      * Construct a StitchJob, specifying the *.chp file to import the settings from.
      * @param file The *.chp file.
      * @throws ChpFileError If there's an error while parsing the *.chp file.
-     * @throws ProgrammingError It shouldn't be thrown, but it isn't caught to allow its display in the GUI if it actually happens.
+     * @throws ProgrammingError It should never be thrown, but it may happen if there's a bug in the program...
      */
     public StitchJob(File file) throws ChpFileError, ProgrammingError {
         this(file, null, null);
@@ -44,7 +44,7 @@ public class StitchJob extends Job {
      * @param file The *.chp file.
      * @param cryptKey The encryption key to use while decrypting the files.
      * @throws ChpFileError If there's an error while parsing the *.chp file.
-     * @throws ProgrammingError It shouldn't be thrown, but it isn't caught to allow its display in the GUI if it actually happens.
+     * @throws ProgrammingError It should never be thrown, but it may happen if there's a bug in the program...
      * @see #StitchJob(File)
      */
     public StitchJob(File file, String cryptKey) throws ChpFileError, ProgrammingError {
@@ -57,7 +57,7 @@ public class StitchJob extends Job {
      * @param cryptKey The encryption key to use while decrypting the files.
      * @param updateTable The {@link Runnable} that should be invoked when {@link #setProgress(Progress)} is called.
      * @throws ChpFileError If there's an error while parsing the *.chp file.
-     * @throws ProgrammingError It shouldn't be thrown, but it isn't caught to allow its display in the GUI if it actually happens.
+     * @throws ProgrammingError It should never be thrown, but it may happen if there's a bug in the program...
      * @see #StitchJob(File, String)
      * @see Job#Job(Runnable)
      */
@@ -83,7 +83,7 @@ public class StitchJob extends Job {
     }
 
     @Override
-    public String getProcessString() {
+    public String getOperationsString() {
         Element element = (Element)(chpDocument.getDocumentElement().getFirstChild());
         StringBuilder s = new StringBuilder();
 
@@ -128,7 +128,7 @@ public class StitchJob extends Job {
      * @param chpFile The file to create a {@link Document} from.
      * @return The created {@link Document}.
      * @throws ChpFileError If the .chp does not exist, or is corrupt.
-     * @throws ProgrammingError It should never happen, as the parser should be already configured correctly.
+     * @throws ProgrammingError It should never be thrown, but it may happen if there's a bug in the program...
      */
     protected static Document getChpFileDocument(File chpFile) throws ChpFileError, ProgrammingError {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

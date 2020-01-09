@@ -95,7 +95,7 @@ public class ChopPanel extends CreateJobPanel {
 
             ICompressConfig zc = compressRow.getCompressConfig();
 
-            Job job = new ChopJob(file, sc, cc, zc, onProgressChange);
+            Job job = new ChopJob(file, zc, cc, sc, onProgressChange);
             jobs.add(job);
 
         }

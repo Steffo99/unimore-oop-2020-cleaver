@@ -3,30 +3,40 @@ package eu.steffo.cleaver.logic.job;
 import java.io.File;
 import javax.swing.SwingUtilities;
 
-import eu.steffo.cleaver.logic.config.*;
-import eu.steffo.cleaver.logic.progress.NotStartedProgress;
-import eu.steffo.cleaver.logic.progress.Progress;
+import eu.steffo.cleaver.logic.progress.*;
 
 /**
- * A {@link Thread} that allows access to the basic .
+ * A task that can be executed by Cleaver in a separate {@link Thread}, and that keeps track of its progress and can display progress updates on a Swing GUI.
  */
 public abstract class Job extends Thread {
-
+    /**
+     * The current {@link Progress} of the job.
+     * @see NotStartedProgress
+     * @see WorkingProgress
+     * @see FinishedProgress
+     * @see ErrorProgress
+     */
     private Progress progress;
+
+    /**
+     * A {@link Runnable} that will be invoked on the GUI {@link Thread} (with {@link SwingUtilities#invokeLater(Runnable)}) every time
+     * {@link #setProgress(Progress)} is called.
+     */
     private Runnable onProgressChange = null;
 
     /**
-     * Construct a Job, setting its progress to {@link NotStartedProgress Not started}.
+     * Construct a Job and set its progress to {@link NotStartedProgress Not started}.
      */
     public Job() {
         this.progress = new NotStartedProgress();
     }
 
     /**
-     * Construct a Job, then add to it a {@link Runnable} that will be invoked through {@link SwingUtilities#invokeLater(Runnable) invokeLater} on progress
-     * changes.
-     * @param onProgressChange A {@link Runnable} that should be invoked when {@link #setProgress(Progress)} is called.
-     * @see Job()
+     * Construct a Job, set its progress to {@link NotStartedProgress Not started} and set the {@link Runnable} that will be called on the GUI {@link Thread}
+     * every time the progress changes.
+     *
+     * @param onProgressChange A {@link Runnable} that will be invoked on the GUI {@link Thread} (with {@link SwingUtilities#invokeLater(Runnable)}) every time
+     *                         {@link #setProgress(Progress)} is called.
      */
     public Job(Runnable onProgressChange) {
         this();
@@ -37,30 +47,15 @@ public abstract class Job extends Thread {
     }
 
     /**
-     * @return The current progress of the job.
-     * @see eu.steffo.cleaver.logic.progress.NotStartedProgress
-     * @see eu.steffo.cleaver.logic.progress.WorkingProgress
-     * @see eu.steffo.cleaver.logic.progress.FinishedProgress
-     * @see eu.steffo.cleaver.logic.progress.ErrorProgress
+     * @return The current {@link Progress} of the job.
+     * @see NotStartedProgress
+     * @see WorkingProgress
+     * @see FinishedProgress
+     * @see ErrorProgress
      */
     public Progress getProgress() {
         return progress;
     }
-
-    /**
-     * @return The {@link String} that should be displayed in the Type column of the {@link eu.steffo.cleaver.gui.panels.JobsTablePanel Jobs Table}.
-     */
-    public abstract String getTypeString();
-
-    /**
-     * @return The {@link String} that should be displayed in the File column of the {@link eu.steffo.cleaver.gui.panels.JobsTablePanel Jobs Table}.
-     */
-    public abstract String getFileString();
-
-    /**
-     * @return The {@link String} that should be displayed in the Process column of the {@link eu.steffo.cleaver.gui.panels.JobsTablePanel Jobs Table}.
-     */
-    public abstract String getProcessString();
 
     /**
      * Set the progress of the job to a different value.
@@ -78,10 +73,29 @@ public abstract class Job extends Thread {
     }
 
     /**
-     * The function that is run on a different thread when {@link Thread#start()} is called.
-     *
-     * Child classes should override {@link Thread#run()}.
+     * @return The {@link String} that should be displayed in the <b>Type</b> column of the {@link eu.steffo.cleaver.gui.panels.JobsTablePanel Jobs Table}.
      */
+    public abstract String getTypeString();
+
+    /**
+     * @return The {@link String} that should be displayed in the <b>File</b> column of the {@link eu.steffo.cleaver.gui.panels.JobsTablePanel Jobs Table}.
+     */
+    public abstract String getFileString();
+
+    /**
+     * @return The {@link String} that should be displayed in the <b>Operations</b> column of the
+     *         {@link eu.steffo.cleaver.gui.panels.JobsTablePanel Jobs Table}.
+     */
+    public abstract String getOperationsString();
+
+    /**
+     * @return The {@link String} that should be displayed in the <b>Progress</b> column of the {@link eu.steffo.cleaver.gui.panels.JobsTablePanel Jobs Table}.
+     */
+    public String getProgressString() {
+        return progress.toString();
+    }
+
     @Override
     public abstract void run();
 }
+
