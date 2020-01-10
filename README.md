@@ -1,10 +1,10 @@
-# `cleaver`
+# `cleaver` (Java 8 Version)
 
 A file compression, encryption and splitting utility in Java.
 
 Made for the [Programmazione ad Oggetti exam](http://didattica.agentgroup.unimore.it/wiki/index.php/Programmazione_ad_Oggetti#Modalit.C3.A0_di_Sviluppo_del_Progetto_Java) at Unimore.
 
-> This project is in active development! Everything may change or break at any time.
+![](https://i.imgur.com/gBiY7eM.png)
 
 ## Specification
 
@@ -12,13 +12,13 @@ The project specification document is available [here](http://didattica.agentgro
 
 ## Documentation
 
-The documentation for this project is available [here](https://gh.steffo.eu/cleaver).
-
-It is being hosted on GitHub Pages.
+**Documentation for the Java 8 version could not be built due to some errors; please check the [documentation for the latest version](https://gh.steffo.eu/cleaver)!**
 
 ## Screenshots
 
 ### Progress
+
+Here are some screenshots of how the GUI changed through the days:
 
 #### 2020-01-09
 
