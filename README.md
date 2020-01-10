@@ -1,6 +1,6 @@
 # `cleaver`
 
-A file compression, encryption and splitting utility in Java.
+A file compression, encryption and splitting utility in Java 13.
 
 Made for the [Programmazione ad Oggetti exam](http://didattica.agentgroup.unimore.it/wiki/index.php/Programmazione_ad_Oggetti#Modalit.C3.A0_di_Sviluppo_del_Progetto_Java) at Unimore.
 
