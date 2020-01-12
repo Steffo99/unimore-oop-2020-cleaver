@@ -135,7 +135,7 @@ public class CleaverCryptInputStream extends FilterInputStream implements ICleav
         byte[] encryptedByte = new byte[1];
         encryptedByte[0] = (byte)encryptedInt;
         byte[] decryptedByte = cipher.update(encryptedByte);
-        return decryptedByte[0];
+        return ((int)decryptedByte[0] & 0xFF);
     }
 
     /**
@@ -180,7 +180,7 @@ public class CleaverCryptInputStream extends FilterInputStream implements ICleav
                 }
                 b[off + i] = (byte)c;
             }
-        } catch (IOException ee) {
+        } catch (IOException ignored) {
         }
         return i;
     }

@@ -47,8 +47,9 @@ public class FileSelectRow extends Row {
 
         openFileChooserButton = new JButton("Select files...");
         openFileChooserButton.addActionListener(e -> {
-            fileChooser.showOpenDialog(this);
-            this.update();
+            if(fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                this.update();
+            }
         });
         this.add(openFileChooserButton);
 

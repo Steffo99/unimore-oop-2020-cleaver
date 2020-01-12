@@ -165,7 +165,7 @@ public class CleaverCryptOutputStream extends FilterOutputStream implements ICle
         byte[] decryptedByte = new byte[1];
         decryptedByte[0] = (byte)decryptedInt;
         byte[] encryptedByte = cipher.update(decryptedByte);
-        int encryptedInt = encryptedByte[0];
+        int encryptedInt = ((int)encryptedByte[0] & 0xFF);
         super.write(encryptedInt);
     }
 
