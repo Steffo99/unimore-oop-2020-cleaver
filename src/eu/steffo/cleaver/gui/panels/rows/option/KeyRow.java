@@ -15,14 +15,14 @@ import javax.swing.*;
  */
 public class KeyRow extends OptionRow {
     /**
-     * A label with "Encryption key" written on it.
+     * A label with "Password" written on it.
      */
-    protected final JLabel keyLabel;
+    protected final JLabel passwordLabel;
 
     /**
      * The text field where the user can input the encryption key.
      */
-    protected final JTextField keyTextField;
+    protected final JTextField passwordTextField;
 
     /**
      * A label with "(if required)" written on it.
@@ -37,13 +37,13 @@ public class KeyRow extends OptionRow {
 
         this.add(Box.createHorizontalStrut(8));
 
-        keyLabel = new JLabel("Encryption key");
-        this.add(keyLabel);
+        passwordLabel = new JLabel("Password");
+        this.add(passwordLabel);
 
         this.add(Box.createHorizontalStrut(8));
 
-        keyTextField = new JTextField();
-        this.add(keyTextField);
+        passwordTextField = new JTextField();
+        this.add(passwordTextField);
 
         this.add(Box.createHorizontalStrut(8));
 
@@ -56,15 +56,15 @@ public class KeyRow extends OptionRow {
     }
 
     /**
-     * @return The encryption key inserted in the {@link #keyTextField}.
+     * @return The encryption key inserted in the {@link #passwordTextField}.
      */
     public String getKey() {
-        return keyTextField.getText();
+        return passwordTextField.getText();
     }
 
     @Override
     public void setEditable(boolean value) {
-        keyTextField.setEditable(value);
+        passwordTextField.setEditable(value);
         this.update();
     }
 
@@ -72,6 +72,6 @@ public class KeyRow extends OptionRow {
      * Refresh the enabled/disabled and editable/non-editable status of all components in the KeyRow.
      */
     protected void update() {
-        keyTextField.setEnabled(keyTextField.isEditable());
+        passwordTextField.setEnabled(passwordTextField.isEditable());
     }
 }

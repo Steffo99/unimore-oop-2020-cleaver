@@ -26,14 +26,14 @@ public class CryptRow extends OptionRow {
     protected final JSeparator separator;
 
     /**
-     * A label with "Key" written on it.
+     * A label with "Password" written on it.
      */
-    protected final JLabel keyLabel;
+    protected final JLabel passwordLabel;
 
     /**
      * The {@link JTextField} where the user can input the desired encryption key for the files, in form of a {@link String}.
      */
-    protected final JTextField keyTextField;
+    protected final JTextField passwordTextField;
 
     /**
      * Construct a CryptRow.
@@ -54,13 +54,13 @@ public class CryptRow extends OptionRow {
 
         this.add(Box.createHorizontalStrut(8));
 
-        keyLabel = new JLabel("Key");
-        this.add(keyLabel);
+        passwordLabel = new JLabel("Password");
+        this.add(passwordLabel);
 
         this.add(Box.createHorizontalStrut(8));
 
-        keyTextField = new JTextField();
-        this.add(keyTextField);
+        passwordTextField = new JTextField();
+        this.add(passwordTextField);
 
         this.add(Box.createHorizontalStrut(8));
 
@@ -75,7 +75,7 @@ public class CryptRow extends OptionRow {
         if(!cryptCheckBox.isSelected()) {
             return null;
         }
-        return new PasswordConfig(keyTextField.getText());
+        return new PasswordConfig(passwordTextField.getText());
     }
 
     @Override
@@ -88,7 +88,7 @@ public class CryptRow extends OptionRow {
      * Refresh the enabled/disabled and editable/non-editable status of all components in the SplitRow.
      */
     protected void update() {
-        keyTextField.setEnabled(cryptCheckBox.isEnabled());
-        keyTextField.setEditable(cryptCheckBox.isSelected());
+        passwordTextField.setEnabled(cryptCheckBox.isEnabled());
+        passwordTextField.setEditable(cryptCheckBox.isSelected());
     }
 }
