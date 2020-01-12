@@ -42,6 +42,18 @@ A GIF animation of Gandalf from The Lord of the Rings.
 
 SHA-256 hash: `8f701aeb296882d5a244d71287e12bd05353dacdf15b1f83f767749f628cd1c2`
 
+## `CryptTextExample.txt`
+
+### Parameters
+
+- **Encrypt** (Password: `HelloWorld`)
+
+### Can be stitched into
+
+The wikitext for the [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard) Wikipedia article.
+
+SHA-256 hash: `42505823d00e2661e0b271e03f440ed4ad5b54e546874de96a6633352eebfb93`
+
 ## `ForkExample.txt`
 
 ### Parameters

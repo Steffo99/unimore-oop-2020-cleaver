@@ -8,6 +8,8 @@ import javax.crypto.spec.*;
 import java.io.*;
 import java.security.*;
 import java.security.spec.*;
+import java.util.Objects;
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -166,6 +168,33 @@ public class CleaverCryptOutputStream extends FilterOutputStream implements ICle
         int encryptedInt = encryptedByte[0];
         super.write(encryptedInt);
     }
+
+    /**
+     * Force writes of 1 byte at a time by overriding {@link FilterOutputStream#write(byte[])} with the code from
+     * {@link OutputStream#write(byte[])}.
+     * @param b The buffer from where the data should be written.
+     * @throws IOException If an error occours during the write.
+     */
+    public void write(byte[] b) throws IOException {
+        write(b, 0, b.length);
+    }
+
+    /**
+     * Force writes of 1 byte at a time by overriding {@link FilterOutputStream#write(byte[], int, int)} with the code from
+     * {@link OutputStream#write(byte[], int, int)}.
+     * @param b The buffer from where the data should be written.
+     * @param off The first position of the {@literal b} buffer from where the data should be written.
+     * @param len The maximum number of bytes to write.
+     * @throws IOException If an error occours during the write.
+     */
+    @Override
+    public void write(byte[] b, int off, int len) throws IOException {
+        Objects.checkFromIndexSize(off, len, b.length);
+        for (int i = 0 ; i < len ; i++) {
+            write(b[off + i]);
+        }
+    }
+
 
     @Override
     public Element toElement(Document doc) {

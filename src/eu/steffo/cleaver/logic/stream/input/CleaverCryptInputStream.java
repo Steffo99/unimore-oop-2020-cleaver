@@ -7,6 +7,7 @@ import javax.crypto.spec.*;
 import java.io.*;
 import java.security.*;
 import java.security.spec.*;
+import java.util.Objects;
 
 /**
  * A {@link ICleaverInputStream} that decrypts incoming data using a {@link Cipher} object.
@@ -135,5 +136,52 @@ public class CleaverCryptInputStream extends FilterInputStream implements ICleav
         encryptedByte[0] = (byte)encryptedInt;
         byte[] decryptedByte = cipher.update(encryptedByte);
         return decryptedByte[0];
+    }
+
+    /**
+     * Force reads of 1 byte at a time by overriding {@link FilterInputStream#read(byte[])} with the code from {@link InputStream#read(byte[])}.
+     * @param b The buffer to read the data into.
+     * @return The number of read bytes, or -1 if the end of the {@link #in} stream has been reached.
+     * @throws IOException If an error occours during the read.
+     */
+    @Override
+    public int read(byte[] b) throws IOException {
+        return this.read(b, 0, b.length);
+    }
+
+    /**
+     * Force reads of 1 byte at a time by overriding {@link FilterInputStream#read(byte[], int, int)} with the code from
+     * {@link InputStream#read(byte[], int, int)}.
+     * @param b The buffer to read the data into.
+     * @param off The first position of the <code>b</code> buffer where the data should be read into.
+     * @param len The maximum number of bytes to read.
+     * @return The number of read bytes, or -1 if the end of the {@link #in} stream has been reached.
+     * @throws IOException If an error occours during the read.
+     */
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        Objects.checkFromIndexSize(off, len, b.length);
+        if (len == 0) {
+            return 0;
+        }
+
+        int c = read();
+        if (c == -1) {
+            return -1;
+        }
+        b[off] = (byte)c;
+
+        int i = 1;
+        try {
+            for (; i < len ; i++) {
+                c = read();
+                if (c == -1) {
+                    break;
+                }
+                b[off + i] = (byte)c;
+            }
+        } catch (IOException ee) {
+        }
+        return i;
     }
 }
