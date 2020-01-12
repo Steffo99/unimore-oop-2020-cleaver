@@ -1,11 +1,13 @@
 package eu.steffo.cleaver.logic.stream.output;
 
+import eu.steffo.cleaver.logic.utils.SafeLongToInt;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -37,9 +39,18 @@ public class CleaverSplitFileOutputStream extends OutputStream implements ICleav
     private int currentFileCount;
 
     /**
-     * The {@link FileOutputStream} this {@link OutputStream} is currently writing to.
+     * The {@link OutputStream} this object is currently writing to.
+     *
+     * It is a {@link BufferedOutputStream} wrapping a {@link FileOutputStream}.
      */
-    private FileOutputStream currentFileOutputStream;
+    private BufferedOutputStream currentOutputStream;
+
+    /**
+     * The maximum buffer size in bytes of the {@link BufferedOutputStream BufferedOutputStreams} created by this object (currently {@value}).
+     *
+     * If the {@link #maximumByteCount} is lower than this value, that is used instead.
+     */
+    private static final int BUFFER_SIZE = 8192;
 
     /**
      * Construct a CleaverSplitFileOutputStream.
@@ -51,36 +62,37 @@ public class CleaverSplitFileOutputStream extends OutputStream implements ICleav
         this.maximumByteCount = maximumByteCount;
         this.currentByteCount = 0;
         this.currentFileCount = 0;
-        this.currentFileOutputStream = null;
+        this.currentOutputStream = null;
     }
 
     /**
-     * Create the following file in the sequence, and update the {@link #currentFileOutputStream}.
+     * Create the following file in the sequence, and update the {@link #currentOutputStream}.
      * @throws IOException If for some reason the program cannot create the file.
      */
     private void createNextFileOutputStream() throws IOException {
-        if(currentFileOutputStream != null) {
-            currentFileOutputStream.close();
+        if(currentOutputStream != null) {
+            currentOutputStream.close();
         }
 
         currentFileCount += 1;
-        currentFileOutputStream = new FileOutputStream(String.format("%s.c%d", baseFile.getAbsolutePath(), currentFileCount));
+        currentOutputStream = new BufferedOutputStream(new FileOutputStream(String.format("%s.c%d", baseFile.getAbsolutePath(), currentFileCount)),
+                                                       Math.min(BUFFER_SIZE, SafeLongToInt.longToInt(maximumByteCount)));
         currentByteCount = 0;
     }
 
     @Override
     public void write(int b) throws IOException {
         // Can be optimized using the modulo operation, not doing it now for clarity
-        if(currentFileOutputStream == null || currentByteCount >= maximumByteCount) {
+        if(currentOutputStream == null || currentByteCount >= maximumByteCount) {
             createNextFileOutputStream();
         }
-        currentFileOutputStream.write(b);
+        currentOutputStream.write(b);
         currentByteCount += 1;
     }
 
     @Override
     public void close() throws IOException {
-        currentFileOutputStream.close();
+        currentOutputStream.close();
     }
 
     /**

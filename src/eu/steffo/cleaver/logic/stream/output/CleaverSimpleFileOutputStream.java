@@ -1,23 +1,22 @@
 package eu.steffo.cleaver.logic.stream.output;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import org.w3c.dom.*;
+import java.io.*;
 
 /**
- * A {@link ICleaverOutputStream} that writes data to a single file with a *.c0 extension.
- *
- * @see FileOutputStream
+ * A {@link ICleaverOutputStream} that writes data to a single ̧{@link File} with a *.c0 extension through a {@link BufferedOutputStream} wrapping a
+ * {@link FileOutputStream}.
  */
-public class CleaverSimpleFileOutputStream extends FileOutputStream implements ICleaverOutputStream {
+public class CleaverSimpleFileOutputStream extends FilterOutputStream implements ICleaverOutputStream {
     /**
      * The base (the {@link File} without *.c0 extension) of the file to write to.
      */
     private final File baseFile;
+
+    /**
+     * The buffer size in bytes of the {@link BufferedOutputStream} created by this object (currently {@value}).
+     */
+    private static final int BUFFER_SIZE = 8192;
 
     /**
      * Create a new CleaverSimpleFileOutputStream.
@@ -25,7 +24,7 @@ public class CleaverSimpleFileOutputStream extends FileOutputStream implements I
      * @throws FileNotFoundException If a required file isn't found.
      */
     public CleaverSimpleFileOutputStream(File baseFile) throws FileNotFoundException {
-        super(String.format("%s.c0", baseFile));
+        super(new BufferedOutputStream(new FileOutputStream(String.format("%s.c0", baseFile)), BUFFER_SIZE));
         this.baseFile = baseFile;
     }
 

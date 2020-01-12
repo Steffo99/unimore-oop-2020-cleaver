@@ -9,7 +9,7 @@ import java.io.*;
 /**
  * A {@link ICleaverOutputStream} that reads split data from a specific number of files having the same size.
  *
- * Bytes are written one at a time to the files in a round-robin format until the stream is exausted.
+ * Bytes are written one at a time to the files in a round-robin sequence until the stream is exausted.
  */
 public class CleaverForkFileOutputStream extends OutputStream implements ICleaverOutputStream {
     /**
@@ -18,12 +18,14 @@ public class CleaverForkFileOutputStream extends OutputStream implements ICleave
     private final File baseFile;
 
     /**
-     * The {@link FileOutputStream} where bytes are written to.
+     * The {@link OutputStream OutputStreams} this object can write to.
+     *
+     * Each one wraps a different {@link FileOutputStream} writing to a *.cXX file.
      */
-    private FileOutputStream[] fileOutputStreams;
+    private BufferedOutputStream[] outputStreams;
 
     /**
-     * The index of the next {@link #fileOutputStreams FileInputStream} to write a byte to.
+     * The index of the next {@link #outputStreams FileInputStream} to write a byte to.
      */
     private int writeTo;
 
@@ -33,6 +35,11 @@ public class CleaverForkFileOutputStream extends OutputStream implements ICleave
     private long partSize;
 
     /**
+     * The maaximum buffer size in bytes of the {@link BufferedOutputStream BufferedOutputStreams} created by this object (currently {@value}).
+     */
+    private static final int BUFFER_SIZE = 8192;
+
+    /**
      * Construct a CleaverForkFileOutputStream.
      * @param baseFile {@link #getBaseFile() Please see getBaseFile().}
      * @param parts The number of parts to be created.
@@ -40,10 +47,10 @@ public class CleaverForkFileOutputStream extends OutputStream implements ICleave
      */
     public CleaverForkFileOutputStream(File baseFile, int parts) throws FileNotFoundException {
         this.baseFile = baseFile;
-        this.fileOutputStreams = new FileOutputStream[parts];
+        this.outputStreams = new BufferedOutputStream[parts];
         for(int i = 0; i < parts; i++) {
             File file = new File(String.format("%s.c%s", baseFile.getAbsolutePath(), i));
-            this.fileOutputStreams[i] = new FileOutputStream(file);
+            this.outputStreams[i] = new BufferedOutputStream(new FileOutputStream(file), BUFFER_SIZE);
         }
         this.writeTo = 0;
         this.partSize = 1;
@@ -74,7 +81,7 @@ public class CleaverForkFileOutputStream extends OutputStream implements ICleave
      * @return The number of file parts to create.
      */
     public int getParts() {
-        return fileOutputStreams.length;
+        return outputStreams.length;
     }
 
     /**
@@ -93,9 +100,9 @@ public class CleaverForkFileOutputStream extends OutputStream implements ICleave
 
     @Override
     public void write(int b) throws IOException {
-        fileOutputStreams[writeTo].write(b);
+        outputStreams[writeTo].write(b);
         writeTo += 1;
-        if(writeTo >= fileOutputStreams.length) {
+        if(writeTo >= outputStreams.length) {
             writeTo = 0;
             partSize += 1;
         }
@@ -104,8 +111,8 @@ public class CleaverForkFileOutputStream extends OutputStream implements ICleave
     @Override
     public void close() throws IOException {
         super.close();
-        for(FileOutputStream fileOutputStream : fileOutputStreams) {
-            fileOutputStream.close();
+        for(BufferedOutputStream outputStream : outputStreams) {
+            outputStream.close();
         }
     }
 
@@ -122,7 +129,7 @@ public class CleaverForkFileOutputStream extends OutputStream implements ICleave
         element.setAttributeNode(partSizeAttr);
 
         Attr partCountAttr = doc.createAttribute("parts");
-        partCountAttr.setValue(Long.toString(fileOutputStreams.length));
+        partCountAttr.setValue(Long.toString(outputStreams.length));
         element.setAttributeNode(partCountAttr);
 
         return element;

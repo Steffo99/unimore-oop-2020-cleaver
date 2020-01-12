@@ -1,5 +1,7 @@
 package eu.steffo.cleaver.logic.stream.input;
 
+import eu.steffo.cleaver.logic.utils.SafeLongToInt;
+
 import java.io.*;
 
 /**
@@ -32,7 +34,14 @@ public class CleaverSplitFileInputStream extends InputStream implements ICleaver
     /**
      * The {@link FileInputStream} this {@link InputStream} is currently reading from.
      */
-    private FileInputStream currentFileInputStream;
+    private BufferedInputStream currentInputStream;
+
+    /**
+     * The maximum buffer size in bytes of the {@link BufferedInputStream BufferedInputStreams} created by this object (currently {@value}).
+     *
+     * If the {@link #maximumByteCount} is lower than this value, that is used instead.
+     */
+    private static final int BUFFER_SIZE = 8192;
 
     /**
      * Construct a CleaverSplitFileInputStream.
@@ -45,36 +54,37 @@ public class CleaverSplitFileInputStream extends InputStream implements ICleaver
         this.maximumByteCount = maximumByteCount;
         this.currentByteCount = 0;
         this.currentFileCount = 0;
-        this.currentFileInputStream = null;
+        this.currentInputStream = null;
     }
 
     /**
-     * Open the following file in the sequence, and update the {@link #currentFileInputStream}.
+     * Open the following file in the sequence, and update the {@link #currentInputStream}.
      * @throws IOException If a problem is encountered while opening or closing a {@link FileInputStream}.
      */
     private void createNextFileInputStream() throws IOException {
-        if(currentFileInputStream != null) {
-            currentFileInputStream.close();
+        if(currentInputStream != null) {
+            currentInputStream.close();
         }
 
         currentFileCount += 1;
-        currentFileInputStream = new FileInputStream(String.format("%s.c%d", baseFile.getAbsolutePath(), currentFileCount));
+        currentInputStream = new BufferedInputStream(new FileInputStream(String.format("%s.c%d", baseFile.getAbsolutePath(), currentFileCount)),
+                                                     Math.min(BUFFER_SIZE, SafeLongToInt.longToInt(maximumByteCount)));
         currentByteCount = 0;
     }
 
     @Override
     public int read() throws IOException {
-        if(currentFileInputStream == null || currentByteCount >= maximumByteCount) {
+        if(currentInputStream == null || currentByteCount >= maximumByteCount) {
             createNextFileInputStream();
         }
-        int result = currentFileInputStream.read();
+        int result = currentInputStream.read();
         currentByteCount += 1;
         return result;
     }
 
     @Override
     public void close() throws IOException {
-        currentFileInputStream.close();
+        currentInputStream.close();
     }
 
     /**

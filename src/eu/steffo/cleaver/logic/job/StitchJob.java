@@ -39,6 +39,15 @@ public class StitchJob extends Job {
     private Document chpDocument;
 
     /**
+     * The size in bytes of the {@link BufferedOutputStream} wrapping the {@link FileOutputStream} created by {@link #run()} to reconstruct the original file.
+     *
+     * The same value is used for a temporary array in the {@link #run()} method where bytes are stored between being read through a {@link ICleaverInputStream}
+     * and being written to the reconstructed file; after that amount of bytes are written, {@link #getProgress()} is called, updating the
+     * {@link Progress} of this Job.
+     */
+    private static final int BUFFER_SIZE = 8192;
+
+    /**
      * Construct a StitchJob, specifying the *.chp file to import the settings from.
      * @param file The *.chp file.
      * @throws ChpFileError If an error is encountered while parsing the *.chp file.
@@ -154,11 +163,6 @@ public class StitchJob extends Job {
         return doc;
     }
 
-    /**
-     * The size of the buffer where bytes are read to before being written into the {@link OutputStream} (currently {@value} bytes).
-     */
-    private static final int BUFFER_SIZE = 8192;
-
     @Override
     public void run() {
         try {
@@ -167,7 +171,7 @@ public class StitchJob extends Job {
             File resultFile = getResultFile();
 
             InputStream inputStream = ICleaverInputStream.fromElement(cleaverNode, chpFolder, cryptKey);
-            OutputStream outputStream = new FileOutputStream(resultFile);
+            OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(resultFile), BUFFER_SIZE);
 
             //Pipe everything to the output, in chunks
             this.setProgress(new WorkingProgress());

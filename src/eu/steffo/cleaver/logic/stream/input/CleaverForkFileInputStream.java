@@ -14,12 +14,14 @@ public class CleaverForkFileInputStream extends InputStream implements ICleaverI
     private final File baseFile;
 
     /**
-     * The {@link FileInputStream FileInputStreams} from where bytes are read.
+     * The {@link InputStream InputStreams} this object can read from.
+     *
+     * Each one wraps a different {@link FileInputStream} reading from a *.cXX file.
      */
-    private FileInputStream[] fileInputStreams;
+    private BufferedInputStream[] inputStreams;
 
     /**
-     * The index of the next {@link #fileInputStreams FileInputStream} to read a byte from.
+     * The index of the next {@link #inputStreams FileInputStream} to read a byte from.
      */
     private int readFrom;
 
@@ -29,17 +31,22 @@ public class CleaverForkFileInputStream extends InputStream implements ICleaverI
     private long partSize;
 
     /**
+     * The buffer size in bytes of the {@link BufferedInputStream BufferedInputStreams} created by this object (currently {@value}).
+     */
+    private static final int BUFFER_SIZE = 8192;
+
+    /**
      * Construct a new CleaverForkFileInputStream.
      * @param baseFile {@link #getBaseFile() Please see getBaseFile().}
      * @param parts The number of parts the original file is split into.
-     * @throws FileNotFoundException If a required file isn't found.
+     * @throws FileNotFoundException If a required *.cXX file isn't found.
      */
     public CleaverForkFileInputStream(File baseFile, int parts) throws FileNotFoundException {
         this.baseFile = baseFile;
-        this.fileInputStreams = new FileInputStream[parts];
+        this.inputStreams = new BufferedInputStream[parts];
         for(int i = 0; i < parts; i++) {
             File file = new File(String.format("%s.c%s", baseFile.getAbsolutePath(), i));
-            this.fileInputStreams[i] = new FileInputStream(file);
+            this.inputStreams[i] = new BufferedInputStream(new FileInputStream(file), BUFFER_SIZE);
         }
         this.readFrom = 0;
         this.partSize = 1;
@@ -70,11 +77,11 @@ public class CleaverForkFileInputStream extends InputStream implements ICleaverI
      * @return The number of file parts to read from.
      */
     public int getParts() {
-        return fileInputStreams.length;
+        return inputStreams.length;
     }
 
     /**
-     * @return The index of the next {@link #fileInputStreams FileInputStream} to read from.
+     * @return The index of the next {@link #inputStreams FileInputStream} to read from.
      */
     public int getReadFrom() {
         return readFrom;
@@ -89,9 +96,9 @@ public class CleaverForkFileInputStream extends InputStream implements ICleaverI
 
     @Override
     public int read() throws IOException {
-        int b = fileInputStreams[readFrom].read();
+        int b = inputStreams[readFrom].read();
         readFrom += 1;
-        if(readFrom >= fileInputStreams.length) {
+        if(readFrom >= inputStreams.length) {
             readFrom = 0;
             partSize += 1;
         }
@@ -101,8 +108,8 @@ public class CleaverForkFileInputStream extends InputStream implements ICleaverI
     @Override
     public void close() throws IOException {
         super.close();
-        for(FileInputStream fileInputStream : fileInputStreams) {
-            fileInputStream.close();
+        for(BufferedInputStream inputStream : inputStreams) {
+            inputStream.close();
         }
     }
 }

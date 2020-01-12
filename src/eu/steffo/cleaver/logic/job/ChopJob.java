@@ -55,6 +55,16 @@ public class ChopJob extends Job {
     private final ISplitConfig splitConfig;
 
     /**
+     * The size in bytes of the {@link BufferedInputStream} wrapping the {@link FileInputStream} created when {@link #run()} is called to read the data from the
+     * file to be chopped.
+     *
+     * The same value is used for a temporary array in the {@link #run()} method where bytes are stored between being read from the input file and being written
+     * through a {@link ICleaverOutputStream}; after that amount of bytes are written, {@link #getProgress()} is called, updating the
+     * {@link Progress} of this Job.
+     */
+    private static final int BUFFER_SIZE = 8192;
+
+    /**
      * Create a new ChopJob (with progress updates support).
      * @param fileToChop The file to <i>chop</i>.
      * @param compressConfig The {@link IConfig} for the <b>Compress</b> step.
@@ -131,7 +141,7 @@ public class ChopJob extends Job {
      * @see CleaverForkFileOutputStream
      * @see CleaverSimpleFileOutputStream
      */
-    protected OutputStream createSplitOutputStream() throws FileNotFoundException {
+    private OutputStream createSplitOutputStream() throws FileNotFoundException {
         if(splitConfig instanceof SizeConfig) {
             return new CleaverSplitFileOutputStream(fileToChop, ((SizeConfig)splitConfig).getSize());
         }
@@ -150,7 +160,7 @@ public class ChopJob extends Job {
      * @return The created {@link OutputStream}, wrapping the one that was passed as parameter.
      * @see CleaverDeflateOutputStream
      */
-    protected OutputStream createCompressOutputStream(OutputStream sourceOutputStream) {
+    private OutputStream createCompressOutputStream(OutputStream sourceOutputStream) {
         if(compressConfig instanceof DeflateConfig) {
             return new CleaverDeflateOutputStream(sourceOutputStream);
         }
@@ -166,7 +176,7 @@ public class ChopJob extends Job {
      * @return The created {@link OutputStream}, wrapping the one that was passed as parameter.
      * @see CleaverCryptOutputStream
      */
-    protected OutputStream createCryptOutputStream(OutputStream sourceOutputStream) {
+    private OutputStream createCryptOutputStream(OutputStream sourceOutputStream) {
         if(cryptConfig instanceof PasswordConfig) {
             return new CleaverCryptOutputStream(sourceOutputStream, ((PasswordConfig)cryptConfig).getPassword().toCharArray());
         }
@@ -193,7 +203,7 @@ public class ChopJob extends Job {
         root.appendChild(((ICleaverOutputStream)outputStream).toElement(doc));
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = null;
+        Transformer transformer;
         try {
             transformer = transformerFactory.newTransformer();
         } catch (TransformerConfigurationException e) {
@@ -208,15 +218,10 @@ public class ChopJob extends Job {
         }
     }
 
-    /**
-     * The size of the buffer where bytes are read to before being written into the {@link OutputStream} (currently {@value} bytes).
-     */
-    private static final int BUFFER_SIZE = 8192;
-
     @Override
     public void run() {
         try {
-            InputStream inputStream = new FileInputStream(fileToChop);
+            InputStream inputStream = new BufferedInputStream(new FileInputStream(fileToChop));
             OutputStream outputStream = createCryptOutputStream(createCompressOutputStream(createSplitOutputStream()));
 
             this.setProgress(new WorkingProgress());
