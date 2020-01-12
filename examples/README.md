@@ -34,7 +34,7 @@ SHA-256 hash: `14a95765b8d5a804ed918c85f4537a5d6b88d0cbfeb043fef482403ce4927eae`
 
 ### Parameters
 
-- **Encrypt** (Password: `Gandalf`)
+- **Encrypt** (Password: `HelloWorld`)
 
 ### Can be stitched into
 

@@ -99,18 +99,18 @@ public class StitchJob extends Job {
     @Override
     public String getOperationsString() {
         Element element = (Element)(chpDocument.getDocumentElement().getFirstChild());
-        StringBuilder s = new StringBuilder();
+        String tagName = element.getTagName();
 
+        StringBuilder s = new StringBuilder();
         boolean arrow = false;
 
         //Iterate over the elements of the document tree until the <OriginalFile> node is reached
-        while(!element.getTagName().equals("OriginalFile")) {
+        while(!tagName.equals("OriginalFile")) {
 
-            if(arrow) {
+            if(arrow && !tagName.equals("Simple")) {
                 s.append(" → ");
             }
 
-            String tagName = element.getTagName();
             switch (tagName) {
                 case "Crypt":
                     s.append("Decrypt");
@@ -132,6 +132,7 @@ public class StitchJob extends Job {
             }
 
             element = (Element)element.getFirstChild();
+            tagName = element.getTagName();
             arrow = true;
         }
 
