@@ -227,9 +227,11 @@ public class ChopJob extends Job {
             this.setProgress(new WorkingProgress());
 
             byte[] buffer = new byte[BUFFER_SIZE];
-            while(inputStream.read(buffer) != -1) {
-                outputStream.write(buffer);
+            int readBytes = inputStream.read(buffer);
+            while(readBytes != -1) {
+                outputStream.write(buffer, 0, readBytes);
                 this.setProgress(new WorkingProgress((float)(fileToChop.length() - inputStream.available()) / (float)fileToChop.length()));
+                readBytes = inputStream.read(buffer);
             }
 
             inputStream.close();

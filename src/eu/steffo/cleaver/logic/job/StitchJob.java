@@ -177,10 +177,11 @@ public class StitchJob extends Job {
             this.setProgress(new WorkingProgress());
 
             byte[] buffer = new byte[BUFFER_SIZE];
-            //Loop until the first byte in the buffer is -1
+            int readBytes = inputStream.read(buffer);
             while(inputStream.read(buffer) != -1) {
-                outputStream.write(buffer);
+                outputStream.write(buffer, 0, readBytes);
                 this.setProgress(new WorkingProgress((float)(resultFile.length() - inputStream.available()) / (float)resultFile.length()));
+                readBytes = inputStream.read(buffer);
             }
 
             inputStream.close();

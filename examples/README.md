@@ -10,7 +10,7 @@ Hashes calculated with [md5file.com/calculator](https://md5file.com/calculator).
 - **Encrypt** (Password: `HelloWorld`) 
 - **Compress**
 
-### Can be rebuilt into
+### Can be stitched into
 
 A completely blue 4000x4000 PNG image.
 
@@ -22,7 +22,7 @@ SHA-256 hash: `14a95765b8d5a804ed918c85f4537a5d6b88d0cbfeb043fef482403ce4927eae`
 
 - **Compress**
 
-### Can be rebuilt into
+### Can be stitched into
 
 A JPEG image of a cleaver.
 
@@ -36,7 +36,7 @@ SHA-256 hash: `14a95765b8d5a804ed918c85f4537a5d6b88d0cbfeb043fef482403ce4927eae`
 
 - **Encrypt** (Password: `Gandalf`)
 
-### Can be rebuilt into
+### Can be stitched into
 
 A GIF animation of Gandalf from The Lord of the Rings.
 
@@ -48,11 +48,23 @@ SHA-256 hash: `8f701aeb296882d5a244d71287e12bd05353dacdf15b1f83f767749f628cd1c2`
 
 - **Split** in **4 parts**
 
-### Can be rebuilt into
+### Can be stitched into
 
 A text file containing 500 paragraphs of [Lorem Ipsum](https://lipsum.com/feed/html).
 
 SHA-256 hash: `8f909b571665b9aafaac08aba6356113880118b302cca5c10e76b5f4b81f84d5`
+
+## `NullExample.txt`
+
+### Parameters
+
+None. It is a copy of the original file.
+
+### Can be stitched into
+
+A text file containing 500 paragraphs of [Lorem Ipsum](https://lipsum.com/feed/html).
+
+SHA-256 hash: `197f1cff5c3dcc33545f8cfb9175fc567b83ad8d4d4ea6a9c0f46d8850e8c066`
 
 ## `SplitExample.txt`
 
@@ -60,7 +72,7 @@ SHA-256 hash: `8f909b571665b9aafaac08aba6356113880118b302cca5c10e76b5f4b81f84d5`
 
 - **Split** in parts of **16384 bytes**
 
-### Can be rebuilt into
+### Can be stitched into
 
 A text file containing 500 paragraphs of [Lorem Ipsum](https://lipsum.com/feed/html).
 
