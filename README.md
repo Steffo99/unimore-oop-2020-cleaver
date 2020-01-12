@@ -4,8 +4,6 @@ A file compression, encryption and splitting utility in Java 13.
 
 Made for the [Programmazione ad Oggetti exam](http://didattica.agentgroup.unimore.it/wiki/index.php/Programmazione_ad_Oggetti#Modalit.C3.A0_di_Sviluppo_del_Progetto_Java) at Unimore.
 
-> This project is in active development! Everything may change or break at any time.
-
 ## Specification
 
 The project specification document is available [here](http://didattica.agentgroup.unimore.it/wiki/images/4/48/Tesina1920.pdf).
@@ -16,9 +14,18 @@ The documentation for this project is available [here](https://gh.steffo.eu/clea
 
 It is being hosted on GitHub Pages.
 
+Generated with:
+```
+javadoc -private -splitindex -author -nodeprecated -encoding UTF-8 -docencoding utf-8 -charset utf-8 --add-stylesheet D:\Codice\cleaver\resources\style.css -html5 -keywords -windowtitle Cleaver -link https://docs.oracle.com/en/java/javase/13/docs/api/ -d docs
+```
+
 ## Screenshots
 
 ### Progress
+
+#### Current
+
+![](src/eu.steffo.cleaver/doc-files/main.png)
 
 #### 2020-01-09
 
