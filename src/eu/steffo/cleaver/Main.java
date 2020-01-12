@@ -9,7 +9,7 @@ import java.util.ArrayList;
 /**
  * The class containing the main function.
  */
-public class Main {
+public final class Main {
     /**
      * The {@link ArrayList} of {@link Job Jobs} that the {@link CleaverFrame} will manipulate.
      *
@@ -30,4 +30,9 @@ public class Main {
         cf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         cf.setVisible(true);
     }
+
+    /**
+     * Disallow instantiations of this class.
+     */
+    private Main() {}
 }

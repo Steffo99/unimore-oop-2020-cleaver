@@ -1,3 +1,5 @@
+/* "blood" theme for javadoc by Stefano Pigozzi */
+
 .topNav, .bottomNav {
     background-color: #440000 !important;
 }
@@ -31,6 +33,7 @@ a:hover, a:active {
     color: #F8981D !important;
 }
 
-body, .overviewSummary caption, .memberSummary caption, .typeSummary caption, .useSummary caption, .constantsSummary caption, .deprecatedSummary caption, .requiresSummary caption, .packagesSummary caption, .providesSummary caption, .usesSummary caption {
+body, .overviewSummary caption, .memberSummary caption, .typeSummary caption, .useSummary caption, .constantsSummary caption, .deprecatedSummary caption,
+.requiresSummary caption, .packagesSummary caption, .providesSummary caption, .usesSummary caption {
     color: black;
 }

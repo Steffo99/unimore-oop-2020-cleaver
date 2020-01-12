@@ -184,10 +184,48 @@ public class ChopJob extends Job {
     }
 
     /**
-     * Generate the element tree by calling the {@link ICleaverOutputStream#toElement(Document)} method on the passed {@link OutputStream} and by writing the
-     * results on a file with a {@link Transformer}.
+     * <p>
+     * Generate the *.chp file for this job by calling the {@link ICleaverOutputStream#toElement(Document)} method of the passed {@link OutputStream} and by
+     * writing the results on a file with a {@link Transformer}.
+     * </p>
+     * <p>
+     * *.chp files are special XML files that contain information about the stream chain used to produce the *.cXX files.
+     * </p>
+     * <p>
+     * Every *.chp file has a {@literal <Cleaver>} element as root containing all the information required to reconstruct the original file.
+     * </p>
+     * <p>
+     * Every element below the root represents either a {@link FilterOutputStream} that wraps the stream represented by its child, or, if the child node is
+     * {@literal <OriginalFile>}, a {@link OutputStream} reading from the {@link File} having the {@link Element#getTextContent() text content}
+     * of the {@literal <OriginalFile>} element as name.
+     * </p>
+     * <p>
+     * Possible tags representing {@link FilterOutputStream FilterOutputStreams} are:
+     * </p>
+     * <ul>
+     *     <li>{@literal <Crypt>}, representing a {@link CleaverCryptOutputStream};</li>
+     *     <li>{@literal <Deflate>}, representing a {@link CleaverDeflateOutputStream}.</li>
+     * </ul>
+     * <p>
+     * Possible tags representing {@link OutputStream simple OutputStreams} are:
+     * </p>
+     * <ul>
+     *     <li>{@literal <Simple>}, representing a {@link CleaverSimpleFileOutputStream};</li>
+     *     <li>{@literal <Split>}, representing a {@link CleaverSplitFileOutputStream};</li>
+     *     <li>{@literal <Fork>}, representing a {@link CleaverForkFileOutputStream}.</li>
+     * </ul>
+     * <p>
+     * Elements may include attributes that useful or required to reconstruct the original file: for example, the {@literal <Crypt>} tag includes the value of
+     * the salt used to generate the AES key and the value of the initialization vector used to encrypt the stream.
+     * </p>
+     * <h4>Example</h4>
+     * <blockquote>
+     *     {@literal <?xml version="1.0" encoding="UTF-8" standalone="no"?><Cleaver><Crypt algorithm="AES" iteration-count="65535" iv="-10,6,-6,63,-68,-106,-102,-12,59,-58,-123,-76,-16,-29,-75,-67," key-algorithm="PBKDF2WithHmacSHA512" key-length="256" mode-of-operation="CFB8" padding="NoPadding" salt="-60,-84,108,93,100,5,63,44,"><Deflate><Split part-size="16384" parts="4"><OriginalFile>AllThreeExample.png</OriginalFile></Split></Deflate></Crypt></Cleaver>}
+     * </blockquote>
+     *
      * @param outputStream The {@link OutputStream} to create the *.chp file for.
-     */
+     * @see eu.steffo.cleaver.logic.stream.input.ICleaverInputStream#fromElement(Element, File, String)
+     * */
     protected void createChpFile(OutputStream outputStream) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
