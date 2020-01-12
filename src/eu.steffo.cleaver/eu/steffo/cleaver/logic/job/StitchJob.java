@@ -81,7 +81,6 @@ public class StitchJob extends Job {
         this.chpFolder = chpFile.getParentFile();
     }
 
-    //TODO: decide on a protection
     private File getResultFile() {
         return new File(chpFolder, chpDocument.getElementsByTagName("OriginalFile").item(0).getTextContent());
     }
